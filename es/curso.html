@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+
+<html data-theme="dark" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="agentes-harness-v5" name="curso"/>
+<title>Terminal y Harness — por qué el terminal le gana al chat · INEMA.CLUB PRO</title>
+<meta content="Curso rápido para ejecutivos y profesionales independientes: las cuatro capas de un sistema de IA (chat web, editor, terminal, harness), por qué la terminal es la mejor, cómo el harness hace que el agente trabaje a tu manera y dónde está todo en las carpetas (.claude, AGENTS.md, wiki, OKF)." name="description"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&amp;family=Inter:wght@400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="../assets/aula.css" rel="stylesheet"/>
+<script>(function(){try{var m=document.querySelector('meta[name=curso]');var CK=(m&&m.content)||'v5:curso';var s=JSON.parse(localStorage.getItem(CK));if(s&&s.prefs&&s.prefs.theme)document.documentElement.setAttribute('data-theme',s.prefs.theme);}catch(e){}})();</script>
+<!--
+  PROTOCOLO DE DESCOBERTA (formato-curso-v5, Passo 0 — registrado como metadado; respondido a partir do pedido do usuário em 2026-09-14):
+  - Público específico: executivos e profissionais liberais, 40+, ocupados, que já usam um chatbot de IA no navegador e nunca abriram um terminal.
+  - Profissões-alvo (≥2): Helena, diretora de operações de uma indústria média · Rafael, arquiteto com escritório de 6 pessoas · Camila, dentista com clínica de 3 cadeiras · Denise, consultora de marketing autônoma.
+  - Familiaridade com tecnologia: usa ChatGPT/Claude no navegador, e-mail, planilha; nunca usou terminal nem editor de código.
+  - Resultado prático esperado: (1) explicar as quatro camadas de um sistema de IA e o teto de cada uma; (2) reconhecer por que o terminal com agente é a camada que executa; (3) entender as 7 peças do harness; (4) escrever a primeira versão das instruções fixas do próprio agente; (5) decidir, tarefa a tarefa, qual camada usar.
+  - Tempo por sessão: 15–21 minutos ("algo rápido").
+
+  JARGÃO — decisão de categoria (CONTEUDO-40MAIS.md §domínio×plataforma):
+  - DOMÍNIO (é o assunto do curso; define inline na 1ª aparição + .gterm, depois usa): terminal, agente, harness, skill, hook, MCP, instruções fixas (CLAUDE.md), editor de código.
+  - PLATAFORMA (nunca presumido; analogia ou palavra comum): instalar→ativar/abrir · diretório→pasta · deploy→publicar · servidor, API, Git, commit, repositório, script, JSON, CLI, pipeline, plugin, encoding → eliminados do texto voltado ao aluno.
+  - ".termdemo" mostra comandos reais (registro literal); toda aparição vem precedida de rampa de acesso.
+
+  ANTI-CLONE: último curso v5 gerado = arquiteto-agentes-saude (3 aulas FUND/FERR/PRAT; profissões Renata/Patrícia; quadros qerr→qbefore-after→qapply→qsteps×2). Este curso: 6 aulas (FUND/FUND/FERR/FUND/PRAT/FUND — a 6ª, sobre pastas, foi acrescentada a pedido do usuário depois da publicação), profissões e situações novas, ordem de opcionais distinta.
+-->
+<style>
+  .view{display:none}.view.active{display:block}
+  .lnav{max-width:1160px;margin:0 auto 5vh;padding:0 clamp(24px,5vw,60px);display:flex;justify-content:space-between;gap:12px}
+  .lnav a{font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:none;border:1px solid var(--line2);border-radius:12px;padding:12px 16px}
+  .lnav a:hover{border-color:var(--accent);color:var(--ink)}
+  #v-trilha .wrap{max-width:1080px;margin:0 auto;padding:0 clamp(24px,5vw,60px)}
+  #v-trilha .t-hero{position:relative;overflow:hidden;padding:20vh 0 8vh;border-bottom:1px solid var(--line)}
+  #v-trilha h1{font-family:var(--serif);font-weight:500;font-size:clamp(40px,6.4vw,72px);line-height:1;letter-spacing:-.025em;margin:0 0 22px}
+  #v-trilha h1 em{font-style:italic;color:var(--accent)}
+  #v-trilha .lead{font-family:var(--serif);font-size:clamp(19px,2.1vw,24px);line-height:1.5;color:var(--ink-soft);max-width:46ch;margin:0 0 30px}
+  #v-trilha section{padding:8vh 0}
+  #v-trilha .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin:0 0 8px}
+  #v-trilha h2{display:block;font-family:var(--serif);font-weight:500;font-size:clamp(26px,3.6vw,38px);margin:0 0 28px}
+  #v-trilha .aulas{display:grid;gap:14px}
+  #v-trilha .au{display:grid;grid-template-columns:56px 1fr auto;gap:20px;align-items:center;text-decoration:none;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px 24px}
+  #v-trilha .au .num{font-family:var(--serif);font-size:30px;color:var(--accent);text-align:center}
+  #v-trilha .au h3{font-family:var(--serif);font-weight:500;font-size:21px;margin:0 0 5px}
+  #v-trilha .au p{margin:0;color:var(--muted);font-size:14.5px}
+  #v-trilha .au .meta{font-family:var(--mono);font-size:11px;color:var(--accent);white-space:nowrap;text-align:right}
+  #v-trilha .au .prog{position:static;margin-top:10px;height:5px;border-radius:99px;background:var(--line);overflow:hidden;max-width:220px;width:auto}
+  #v-trilha .au .prog i{display:block;height:100%;width:100%;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .5s}
+  #v-trilha footer{max-width:1080px;margin:0 auto;padding:6vh clamp(24px,5vw,60px) 12vh;color:var(--faint);text-align:center;font-family:var(--serif);font-style:italic;border-top:1px solid var(--line)}
+  #v-trilha .videobox{margin:0 0 6vh;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--panel)}
+  #v-trilha .videobox video{display:block;width:100%;height:auto;background:#000}
+  #v-trilha .videobox p{margin:0;padding:12px 18px;font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+  @media(max-width:720px){#v-trilha .au{grid-template-columns:44px 1fr}#v-trilha .au .meta{grid-column:2;text-align:left}}
+  /* figuras: só tokens */
+  .fig svg,.herofig svg,.mobfig svg{width:100%;height:auto;display:block}
+  .fig text,.herofig text{font-family:var(--mono);font-size:9px;fill:var(--ink-soft)}
+  .fig .lbl,.herofig .lbl{fill:var(--muted)}
+  .fig .hi,.herofig .hi{fill:var(--accent)}
+  .fig .wm,.herofig .wm{fill:var(--warm)}
+  .fig .box{fill:var(--panel);stroke:var(--line2);stroke-width:1.2}
+  .fig .boxon{fill:var(--panel2);stroke:var(--accent);stroke-width:1.4}
+  .fig .ln{stroke:var(--line2);stroke-width:1.4;fill:none}
+  .fig .lnon{stroke:var(--accent);stroke-width:1.6;fill:none}
+  .fig .lnwm{stroke:var(--warm);stroke-width:1.6;fill:none}
+  .herofig .st{stroke:var(--ink-soft);stroke-width:1.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .herofig .sta{stroke:var(--accent);stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .herofig .stw{stroke:var(--warm);stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .herofig .fl{fill:var(--panel2);stroke:var(--line2);stroke-width:1.2}
+</style>
+<link href="https://inematds.github.io/agentes-harness/curso.html" hreflang="pt-BR" rel="alternate"/><link href="https://inematds.github.io/agentes-harness/en/curso.html" hreflang="en" rel="alternate"/><link href="https://inematds.github.io/agentes-harness/es/curso.html" hreflang="es" rel="alternate"/></head>
+<body><div class="inema-lang" style="position:fixed;right:14px;bottom:14px;z-index:9999;display:flex;gap:2px;padding:4px;border-radius:10px;background:rgba(12,12,16,.82);border:1px solid rgba(226,162,59,.45);font:600 12px/1 Sora,Inter,system-ui,sans-serif;backdrop-filter:blur(8px)" translate="no"><a href="../curso.html" hreflang="pt-BR" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">PT</a><a href="../en/curso.html" hreflang="en" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">EN</a><a href="./curso.html" hreflang="es" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#1a1206;background:#E2A23B">ES</a></div>
+<div class="bar"><div class="bar-inner">
+<span class="brand"><a class="mark" href="https://inema.club" rel="noopener" target="_blank">INEMA.CLUB</a><a class="pro" href="https://inema.pro" rel="noopener" target="_blank">PRO</a><a class="course" href="landing.html">Terminal y Harness</a></span>
+<a class="back" href="#trilha" style="display:none">← ruta</a>
+<button class="pill" id="pill" style="display:none">0 leídos</button>
+<button id="revbtn">revisar <span id="revn">0</span></button>
+<button id="exbtn">ejercicios</button>
+<button id="jorbtn">recorrido</button>
+<button aria-label="Cómo funciona" id="helpbtn">?</button>
+<button aria-label="Preferencias de lectura" id="prefsbtn">Aa</button>
+<button id="themebtn">tema: oscuro</button>
+</div></div>
+<!-- ===== TRILHA ===== -->
+<section class="view" id="v-trilha">
+<header class="t-hero"><div class="wrap">
+<p class="kicker">Ruta única · 6 clases breves</p>
+<h1>El chat responde.<br/>O <em>terminal</em> ejecuta.</h1>
+<p class="lead">En seis sesiones de 15 a 21 minutos, sabrás explicar las cuatro capas de un sistema de IA, por qué la terminal con agente es la que realmente hace el trabajo, cómo escribir las reglas para que trabaje a tu manera y dónde vive todo esto en las carpetas del proyecto.</p>
+</div></header>
+<section><div class="wrap">
+<div class="statcards"></div>
+<div class="videobox">
+<video controls="" playsinline="" preload="metadata" src="../video/camadas-terminal-16x9.mp4"></video>
+<p>Video de 2 minutos: las cuatro capas, del chat al harness, y dónde vive todo. Míralo antes de la clase 1 o después de la clase 2. <a href="../video/camadas-terminal-9x16.mp4">Versión vertical para Shorts/Reels</a>.</p>
+</div>
+<p class="eyebrow">Clases</p>
+<h2>Del chat al harness</h2>
+<div class="aulas">
+<a class="au on" data-aula="1" href="#aula-1">
+<div class="num">1</div>
+<div><h3>El chat responde y ahí se detiene</h3><p>Termina sabiendo decir, con ejemplos de tu trabajo, en qué te ayuda el chatbot del navegador y en qué punto exacto se traba.</p><div class="prog"><i></i></div></div>
+<div class="meta">17 min · abrir →</div>
+</a>
+<a class="au on" data-aula="2" href="#aula-2">
+<div class="num">2</div>
+<div><h3>Las cuatro capas, lado a lado</h3><p>Termina sabiendo dibujar en una servilleta las capas de chat, editor, terminal y harness, y explicar por qué el terminal tiene manos.</p><div class="prog"><i></i></div></div>
+<div class="meta">17 min · abrir →</div>
+</a>
+<a class="au on" data-aula="3" href="#aula-3">
+<div class="num">3</div>
+<div><h3>El terminal en la práctica</h3><p>Termina sabiendo reconocer, en una sesión real con un agente, qué leyó, qué ejecutó, cuándo pidió permiso y cómo verificó el resultado.</p><div class="prog"><i></i></div></div>
+<div class="meta">17 min · abrir →</div>
+</a>
+<a class="au on" data-aula="4" href="#aula-4">
+<div class="num">4</div>
+<div><h3>El harness, pieza por pieza</h3><p>Termina con la primera versión de las instrucciones fijas de tu agente escrita y las siete piezas del harness identificadas.</p><div class="prog"><i></i></div></div>
+<div class="meta">21 min · abrir →</div>
+</a>
+<a class="au on" data-aula="5" href="#aula-5">
+<div class="num">5</div>
+<div><h3>Qué capa para cada tarea</h3><p>Termina con cinco tareas de tu semana clasificadas por capa y al menos una lista para pasar al terminal.</p><div class="prog"><i></i></div></div>
+<div class="meta">15 min · abrir →</div>
+</a>
+<a class="au on" data-aula="6" href="#aula-6">
+<div class="num">6</div>
+<div><h3>La carpeta es la oficina del agente</h3><p>Termina con la estructura de carpetas de tu proyecto definida: una carpeta por proyecto, el cajón .claude, el AGENTS.md abierto, la wiki de conocimiento y el formato OKF.</p><div class="prog"><i></i></div></div>
+<div class="meta">22 min · abrir →</div>
+</a>
+</div>
+</div></section>
+<footer><div class="wrap">Terminal y Harness · INEMA.CLUB PRO</div></footer>
+</section>
+<!-- =====================================================================
+     AULA 1 — FUNDAMENTO
+     ===================================================================== -->
+<section class="view" data-aula="1" data-tempo="17min" id="v-aula-1">
+<header class="hero"><div class="hero-inner">
+<div>
+<p class="kicker">Clase 1 · Fundamento</p>
+<h1>El chat responde,<br/><em>y se detiene ahí</em></h1>
+<p class="promise">Al final de esta clase podrás señalar, en una tarea real de tu trabajo, el momento exacto en que el chatbot del navegador deja de ayudar y empieza a hacerte perder tiempo.</p>
+<p class="why">Ya pagas por una IA y aun así pasas la tarde copiando y pegando. Pegas un informe, lees la respuesta, pegas otro, corriges a mano y al día siguiente la conversación no recuerda nada. La molestia es real y no es culpa tuya: es el límite de la capa que estás usando.</p>
+<p class="cue"><span class="arw">↓</span> rol para estudiar</p>
+</div>
+<div class="herofig"><svg aria-hidden="true" fill="none" viewbox="0 0 300 240">
+<!-- metáfora: consultor no telefone, mesa cheia de pastas que ele não vê -->
+<rect class="fl" height="10" rx="3" width="260" x="20" y="150"></rect>
+<rect class="fl" height="38" rx="4" width="52" x="34" y="112"></rect><rect class="fl" height="28" rx="4" width="52" x="92" y="122"></rect><rect class="fl" height="46" rx="4" width="52" x="150" y="104"></rect>
+<text class="lbl" text-anchor="middle" x="60" y="135">carpeta</text><text class="lbl" text-anchor="middle" x="118" y="140">carpeta</text><text class="lbl" text-anchor="middle" x="176" y="131">carpeta</text>
+<circle class="st" cx="245" cy="60" r="18"></circle><path class="st" d="M215 120c4-22 16-34 30-34s26 12 30 34"></path>
+<path class="sta" d="M262 52c8-2 14 4 12 12"></path><path class="sta" d="M270 40c12-4 22 8 18 22"></path>
+<path class="stw" d="M232 62l-14 8"></path>
+<text class="hi" text-anchor="middle" x="245" y="200">el consultor opina por teléfono</text>
+<text class="lbl" text-anchor="middle" x="118" y="200">pero no ve las carpetas</text>
+</svg></div>
+</div></header>
+<div class="layout">
+<div class="col">
+<section class="step" data-fig="1" data-kind="fundamento">
+<h2><span class="n">01</span> El chatbot del navegador es un asesor por teléfono</h2>
+<p>Uno <span class="gterm" data-def="Programa de IA que conversa por texto numa página do navegador, como ChatGPT ou Claude. Você escreve, ele responde." tabindex="0">chatbot web</span> es la IA que abres en el navegador y con la que conversas. Es la primera capa de cualquier sistema de IA y es buena en lo que hace: pensar contigo, redactar, resumir, traducir, darte una segunda opinión en segundos. No requiere preparación. La abres, escribes y recibes una respuesta.</p>
+<p>Helena, directora de operaciones de una industria de empaques, lo usa así todos los días: pega el acta de la reunión de producción y pide los tres riesgos que nadie mencionó en voz alta. En veinte segundos obtiene un análisis que valdría una hora de trabajo de un consultor. Para este tipo de tarea, una conversación con un solo texto, la capa 1 es imbatible.</p>
+<div class="qbefore-after">
+<div class="qba-col qba-before"><p class="qba-lbl">antes, sin IA</p><p class="qba-txt">Helena leía toda el acta por la noche, hacía anotaciones con bolígrafo y escribía el resumen por la mañana. Una hora y media.</p></div>
+<div class="qba-col qba-depois"><p class="qba-lbl">con el chat web</p><p class="qba-txt">Pega el acta, pide los riesgos y revisa la respuesta con lo que sabe de la fábrica. Doce minutos.</p></div>
+<p class="qba-saldo"><b>Balance:</b> cerca de 80 minutos por reunión, en tareas de un solo texto. Aquí es donde brilla el chat.</p>
+</div>
+<div class="mobfig" data-mobfig="1"></div>
+<button class="readbtn" data-read="s1">marcar como leído</button>
+</section>
+<section class="step" data-fig="2" data-kind="fundamento">
+<h2><span class="n">02</span> El límite: no ve tus archivos, así que te conviertes en el mensajero</h2>
+<p>El asesor por teléfono tiene un problema: no está en tu oficina. No ve las carpetas sobre el escritorio. Todo lo que sabe es lo que le lees. Con el chat web pasa lo mismo. No ve tu computadora, así que cada archivo debe copiarse y pegarse, y la respuesta debe copiarse de vuelta. Te conviertes en mensajero entre la IA y tu propio trabajo.</p>
+<p>Rafael, arquitecto, lo sintió durante la semana de las propuestas. Tenía catorce presupuestos antiguos en una carpeta y quería una tabla que comparara el precio por metro cuadrado. En el chat, pegó uno por uno. En la séptima propuesta, la conversación "olvidó" la primera. En la décima, se rindió y lo hizo a mano en una hoja de cálculo. El problema no era la inteligencia de la IA. Era que no tenía acceso a la carpeta.</p>
+<p>Fíjate en el patrón: la tarea con <b>uno</b> el texto funciona; la tarea con <b>varios</b> se rompen archivos. Ese es el límite de la capa 1, y aparece justo en las tareas que más tiempo te llevan.</p>
+<div class="quiz" data-answer="c">
+<p class="qk">Ponte a prueba</p><p class="q">Camila, dentista, quiere un resumen de los puntos de atención de 30 fichas de anamnesis que están en archivos separados en la computadora de la clínica. ¿Qué pasa si usa solo el chat web?</p>
+<button class="opt" data-k="a">Funciona bien: la IA lee la carpeta y devuelve el resumen.</button>
+<button class="opt" data-k="b">No funciona porque la IA no entiende fichas médicas.</button>
+<button class="opt" data-fb="Exato. A limitação não é a inteligência, é o acesso: o chat web não vê o computador dela. Cada ficha teria de ser colada, uma a uma, e a conversa perde as primeiras no caminho." data-k="c">Ella tendrá que pegar las 30 fichas una por una, y la conversación perderá las primeras.</button>
+<p class="qfb"></p>
+</div>
+<div class="mobfig" data-mobfig="2"></div>
+<button class="readbtn" data-read="s2">marcar como leído</button>
+</section>
+<section class="step" data-fig="3" data-kind="fundamento">
+<h2><span class="n">03</span> Cada conversación empieza desde cero</h2>
+<p>El segundo límite es la memoria. Le explicas al chat cómo escribe tu empresa, qué clientes son prioritarios y qué formato de informe te gusta. Mañana, en una nueva conversación, lo habrá olvidado todo. Es como un consultor que en cada llamada te pide que vuelvas a contarle la historia de la empresa.</p>
+<p>Denise, consultora de marketing, tiene un documento con "las reglas de mi escritura" y lo pega al inicio de cada conversación. Funciona, pero es una solución improvisada: ella es la memoria de la IA. Cuando se olvida de pegarlo, el texto sale con el tono equivocado y solo se da cuenta después de enviárselo al cliente.</p>
+<p>Recuerda estos dos límites: acceso y memoria. Las siguientes capas existen para superar precisamente esos dos.</p>
+<div class="qanchor"><p>El chat es excelente para conversar sobre un texto. Se traba cuando el trabajo está repartido entre varios archivos y se repite cada semana.</p></div>
+<div class="mobfig" data-mobfig="3"></div>
+<button class="readbtn" data-read="s3">marcar como leído</button>
+</section>
+<section class="practice" data-mode="tarefa" data-practice="p1">
+<p class="pk">Practica ahora <span class="pcount">0/4 completados</span></p>
+<h3 class="ph">Encuentra el punto en que el chat se bloquea en una tarea tuya</h3>
+<p class="pgoal">En unos 10 minutos, elige una tarea real de tu semana que implique más de un archivo y registra dónde deja de ayudarte el chat web. Te llevarás escrito el "punto de bloqueo".</p>
+<p class="psafe">Nada de esto cambia nada en tu computadora ni en tus conversaciones. Solo es observación. Si la tarea elegida no se traba, perfecto: anótalo también; es una tarea que corresponde a la capa 1.</p>
+<ol class="psteps">
+<li><label><input data-ptask="1" type="checkbox"/> <span>Elige una tarea de tu semana que use al menos tres archivos (propuestas, fichas, informes, hojas de cálculo). Escribe su nombre en una línea.</span></label></li>
+<li><label><input data-ptask="2" type="checkbox"/> <span>Intenta hacer el comienzo en el chat web: pega el primer archivo y pide lo que necesitas. Anota cuántos minutos te llevó.</span></label></li>
+<li><label><input data-ptask="3" type="checkbox"/> <span>Pega el segundo y el tercer archivo. Marca el momento en que pensaste "esto va a tardar" o en que la respuesta ignoró algo que ya habías pegado.</span></label></li>
+<li><label><input data-ptask="4" type="checkbox"/> <span>Escribe en una frase el punto de bloqueo: "el chat se bloquea cuando ___". Estará listo cuando esa frase mencione el acceso a archivos o la memoria entre conversaciones.</span></label></li>
+</ol>
+<p class="pdone">Acabas de identificar, con una tarea tuya, el límite exacto de la capa 1. Esa es la frase que las próximas clases resolverán.</p>
+</section>
+</div>
+<aside class="rail"><div class="railsticky">
+<div class="figstage">
+<div class="fig on" data-cap="&lt;b&gt;Fig. 1&lt;/b&gt; Um texto entra, uma resposta sai. Para tarefas de um texto só, o caminho é curto e vale o tempo." data-fig="1">
+<svg aria-hidden="true" fill="none" viewbox="0 0 220 200">
+<rect class="box" height="60" rx="8" width="60" x="18" y="70"></rect><text text-anchor="middle" x="48" y="104">1 texto</text>
+<path class="lnon" d="M80 100h30"></path><path class="lnon" d="M106 96l6 4-6 4"></path>
+<rect class="boxon" height="80" rx="10" width="90" x="112" y="60"></rect><text class="hi" text-anchor="middle" x="157" y="96">chat web</text><text class="lbl" text-anchor="middle" x="157" y="112">piensa · redacta</text>
+<path class="lnon" d="M157 142v26"></path><path class="lnon" d="M153 164l4 6 4-6"></path>
+<text text-anchor="middle" x="157" y="188">1 respuesta</text>
+</svg>
+</div>
+<div class="fig" data-cap="&lt;b&gt;Fig. 2&lt;/b&gt; Vários arquivos, uma porta estreita: você carrega cada um à mão, e a conversa derruba os primeiros pelo caminho." data-fig="2">
+<svg aria-hidden="true" fill="none" viewbox="0 0 220 200">
+<rect class="box" height="30" rx="5" width="44" x="14" y="30"></rect><rect class="box" height="30" rx="5" width="44" x="14" y="70"></rect><rect class="box" height="30" rx="5" width="44" x="14" y="110"></rect><rect class="box" height="30" rx="5" width="44" x="14" y="150"></rect>
+<text class="lbl" text-anchor="middle" x="36" y="49">arch 1</text><text class="lbl" text-anchor="middle" x="36" y="89">arch 2</text><text class="lbl" text-anchor="middle" x="36" y="129">arch 3</text><text class="lbl" text-anchor="middle" x="36" y="169">arch 4</text>
+<path class="ln" d="M60 45c30 0 30 60 60 60M60 85c30 0 30 20 60 20M60 125c30 0 30-20 60-20M60 165c30 0 30-60 60-60"></path>
+<rect class="wm" height="18" rx="2" width="8" x="120" y="96"></rect><text class="wm" text-anchor="middle" x="124" y="88">tú</text>
+<path class="lnwm" d="M128 105h28"></path>
+<rect class="boxon" height="70" rx="8" width="50" x="156" y="70"></rect><text class="hi" text-anchor="middle" x="181" y="100">chat</text>
+<path class="lnwm" d="M170 128l22-16M192 128l-22-16"></path><text class="lbl" text-anchor="middle" x="181" y="158">olvida</text><text class="lbl" text-anchor="middle" x="181" y="170">los primeros</text>
+</svg>
+</div>
+<div class="fig" data-cap="&lt;b&gt;Fig. 3&lt;/b&gt; Sem memória entre conversas, o contexto que você ensinou ontem não existe hoje. Você reabastece toda vez." data-fig="3">
+<svg aria-hidden="true" fill="none" viewbox="0 0 220 200">
+<rect class="boxon" height="48" rx="8" width="56" x="16" y="40"></rect><text class="hi" text-anchor="middle" x="44" y="60">lun</text><text class="lbl" text-anchor="middle" x="44" y="76">contexto</text>
+<rect class="box" height="48" rx="8" width="56" x="82" y="40"></rect><text text-anchor="middle" x="110" y="60">tener</text><text class="lbl" text-anchor="middle" x="110" y="76">vacío</text>
+<rect class="box" height="48" rx="8" width="56" x="148" y="40"></rect><text text-anchor="middle" x="176" y="60">mié</text><text class="lbl" text-anchor="middle" x="176" y="76">vacío</text>
+<path class="ln" d="M72 64h10M138 64h10" stroke-dasharray="3 3"></path>
+<path class="lnwm" d="M44 100v30M110 100v30M176 100v30"></path>
+<text class="wm" text-anchor="middle" x="44" y="150">tú pegas</text><text class="wm" text-anchor="middle" x="110" y="150">tú pegas</text><text class="wm" text-anchor="middle" x="176" y="150">tú pegas</text>
+<text class="lbl" text-anchor="middle" x="110" y="182">la memoria eres tú</text>
+</svg>
+</div>
+</div>
+<p class="railcap"></p>
+<div class="steps-ind"></div>
+<p class="sidenote">Resalta cualquier fragmento para convertirlo en una tarjeta de repaso.</p>
+</div></aside>
+</div>
+<div class="fecho-wrap">
+<div class="recap-autor">
+<p class="rak">Resumen</p>
+<ul>
+<li>El chatbot del navegador es la primera capa: excelente para pensar, redactar y resumir un texto a la vez, sin ninguna preparación.</li>
+<li>Tiene dos límites. No ve tus archivos, así que tú haces el traslado a mano. Y no guarda nada de una conversación a otra.</li>
+<li>Estos límites aparecen precisamente en las tareas con varios archivos y en las que se repiten, que son las que más tiempo consumen de tu semana.</li>
+</ul>
+</div>
+<div class="next-action">
+<p class="nak">Tu siguiente paso</p>
+<p class="na-win">Acabas de nombrar el límite de la herramienta que usas todos los días, con un caso tuyo.</p>
+<p class="na-action">En los próximos 15 minutos: escribe la frase del punto de bloqueo en un lugar que vayas a revisar (una nota en el celular, la agenda). Se convertirá en tu primera solicitud al terminal en la clase 3.</p>
+<p class="na-hook">En la próxima clase verás las otras tres capas una al lado de la otra y entenderás por qué la tercera, el terminal, es la que por fin tiene manos.</p>
+</div>
+</div>
+<nav class="lnav"><a href="#trilha">← ruta</a><a href="#aula-2">lección 2 →</a></nav>
+<footer>Clase 1 · INEMA.CLUB PRO</footer>
+<script id="cards-1" type="application/json">
+[
+  {"front":"Rafael tem 14 propostas em arquivos separados e quer uma tabela comparativa. Ele colou 6 no chat e a resposta ignorou a primeira. Qual é a causa, e o que isso diz sobre a camada?","back":"O chat não tem acesso à pasta e perde o começo de conversas longas. A tarefa envolve vários arquivos, que é o teto da camada 1. Não é falta de inteligência, é falta de acesso."},
+  {"front":"Duas tarefas: (a) reescrever um e-mail difícil para um cliente; (b) cruzar 20 fichas para achar pendências. Qual delas pertence ao chat web, e por quê?","back":"A (a): um texto, uma resposta. A (b) pede acesso a muitos arquivos, e o chat não vê o computador. Regra: um texto por vez fica no chat; vários arquivos pedem outra camada."},
+  {"front":"Denise cola as 'regras da minha escrita' no início de cada conversa. Que teto do chat ela está contornando à mão, e qual o risco?","back":"O teto da memória: o chat esquece tudo entre conversas. O risco é o dia em que ela esquece de colar e o texto sai com o tom errado sem ela notar."},
+  {"front":"Qual a diferença entre um consultor ao telefone e um funcionário na sala, na metáfora desta aula?","back":"O consultor ao telefone opina sobre o que você lê para ele (chat web). O funcionário na sala vê as pastas e trabalha nelas (o que as próximas camadas fazem)."}
+]
+</script>
+<!-- COMPLETUDE aula-1 | tipo=FUNDAMENTO | steps=3
+  [OK] promise            .promise no cold-open (1)
+  [OK] why                .why após a promessa (1)
+  [OK] tempo              data-tempo no view + render no cold-open (1)
+  [OK] exemplo-profissao  exemplo aplicado em 100% dos steps (3/3: Helena, Rafael, Denise)
+  [OK] apoio-visual       figura conceitual legendada em 100% dos steps (3/3, data-fig 1..3)
+  [OK] practice           .practice[data-mode="tarefa"] (exatamente 1)
+  [OK] psafe              .psafe dentro da prática (1)
+  [OK] pgoal-tempo        .pgoal com tempo declarado (~10 min) (1)
+  [OK] recap-autor        .recap-autor no fecho (1)
+  [OK] next-action        .next-action no fecho (1)
+  [OK] cards              <script id="cards-1"> presente (4 cartões: diagnóstico, decisão, diagnóstico, contraste)
+  [OK] anti-duplicacao    §11.3 — 3 testes passam (substring / forma / operação)
+  [OK] teste-se-FUND      tipo=FUNDAMENTO: presente (1 quiz data-fb)
+  Dosagem: quiz + cards + qbefore-after (step 1) + qanchor (step 3) = 4 obrigatórios, 0 opcional. Densidade: quadros nos steps 1 e 3, step 2 só prosa.
+-->
+</section>
+<!-- =====================================================================
+     AULA 2 — FUNDAMENTO
+     ===================================================================== -->
+<section class="view" data-aula="2" data-tempo="17min" id="v-aula-2">
+<header class="hero"><div class="hero-inner">
+<div>
+<p class="kicker">Clase 2 · Fundamento</p>
+<h1>Las cuatro capas,<br/><em>lado a lado</em></h1>
+<p class="promise">Al final de esta clase podrás dibujar en una servilleta las cuatro capas de un sistema de IA (chat, editor, terminal, harness) y decir, para cada una, cuál es su ventaja y en qué punto se atasca.</p>
+<p class="why">Cada mes aparece una herramienta nueva de IA y alguien de tu equipo dice que "esta sí es buena". Sin un mapa, compras por el ruido. Con el mapa de las capas, miras cualquier herramienta y sabes en diez segundos en qué nivel está y qué puede hacer en realidad.</p>
+<p class="cue"><span class="arw">↓</span> rol para estudiar</p>
+</div>
+<div class="herofig"><svg aria-hidden="true" fill="none" viewbox="0 0 300 240">
+<!-- metáfora: um prédio de 4 andares; no térreo o balcão com as chaves -->
+<rect class="fl" height="180" rx="6" width="160" x="70" y="30"></rect>
+<path class="st" d="M70 75h160M70 120h160M70 165h160"></path>
+<text class="lbl" x="84" y="58">4 · manual y credencial</text>
+<text class="lbl" x="84" y="103">3 · mostrador con las llaves</text>
+<text class="lbl" x="84" y="148">2 · asistente al lado</text>
+<text class="lbl" x="84" y="193">1 · consultor por teléfono</text>
+<rect class="sta" height="30" rx="3" width="22" x="200" y="82"></rect><circle class="sta" cx="211" cy="92" r="3"></circle>
+<path class="stw" d="M20 190c14-30 30-30 44 0"></path><circle class="stw" cx="42" cy="150" r="9"></circle>
+<text class="hi" text-anchor="middle" x="150" y="228">el mismo edificio, cuatro pisos</text>
+</svg></div>
+</div></header>
+<div class="layout">
+<div class="col">
+<section class="step" data-fig="1" data-kind="fundamento">
+<h2><span class="n">01</span> Capa 2: la IA dentro del editor ve la página abierta</h2>
+<p>La segunda capa es la IA que vive dentro de un <span class="gterm" data-def="Programa em que programadores escrevem e organizam código, como o VS Code ou o Cursor. Pense num Word para quem faz software." tabindex="0">editor de código</span>. Si el chat es un consultor por teléfono, esta es una asistente sentada a tu lado, mirando la misma pantalla. Ve el archivo que está abierto y sugiere cambios allí mismo, sin que tengas que copiar nada.</p>
+<p>Es un gran salto para quienes programan. Para Rafael, arquitecto, es menos útil: el editor está hecho para código, no para propuestas y planos. E incluso para quien programa, el asistente solo ve lo que está en la pantalla. Si la respuesta depende de otros veinte archivos de la carpeta, los adivina. Y quien ejecuta, prueba y verifica sigue siendo la persona.</p>
+<p>Ventaja: ves el archivo abierto y lo editas ahí mismo. Límite: solo ve la pantalla, y las manos siguen siendo tuyas.</p>
+<div class="mobfig" data-mobfig="1"></div>
+<button class="readbtn" data-read="s1">marcar como leído</button>
+</section>
+<section class="step" data-fig="2" data-kind="fundamento">
+<h2><span class="n">02</span> Capa 3: la terminal es el mostrador directo con la computadora</h2>
+<p>O <span class="gterm" data-def="Janela de texto em que você escreve o que quer e o computador responde por escrito. Sem botões nem menus. Existe em todo computador, escondida." tabindex="0">terminal</span> es una ventana de texto que existe en todas las computadoras. Escribes una solicitud, la computadora la ejecuta y responde por escrito. Sin menús ni botones. Parece antiguo, y lo es: es la forma más directa de hablar con la máquina, anterior a cualquier pantalla bonita.</p>
+<p>¿Por qué importa esto? Porque un <span class="gterm" data-def="IA que, além de responder, age: lê arquivos, executa tarefas, confere o resultado e corrige, num ciclo, até entregar. Claude Code e Codex são exemplos que rodam no terminal." tabindex="0">agente</span> puesto en este mostrador puede hacer todo lo que haría una persona haciendo clic, solo que por escrito y más rápido. Abre toda la carpeta de Rafael, lee las catorce propuestas, arma la tabla, comprueba que la suma sea correcta y avisa cuando termina. Tú no copias nada. Es el empleado con las llaves de la oficina, no el consultor al teléfono.</p>
+<div class="qbefore-after">
+<div class="qba-col qba-before"><p class="qba-lbl">chat web</p><p class="qba-txt">Rafael pega 14 propuestas, una por una. Pierde las primeras. Se da por vencido en la décima y lo hace en la hoja de cálculo.</p></div>
+<div class="qba-col qba-depois"><p class="qba-lbl">agente en la terminal</p><p class="qba-txt">Rafael escribe: «lee las propuestas de esta carpeta y arma una tabla de precios por metro cuadrado». El agente lee las 14, la arma, la verifica y se la entrega.</p></div>
+<p class="qba-saldo"><b>Balance:</b> de perder una tarde a 4 minutos, y la tabla queda verificada con los archivos originales.</p>
+</div>
+<div class="mobfig" data-mobfig="2"></div>
+<button class="readbtn" data-read="s2">marcar como leído</button>
+</section>
+<section class="step" data-fig="3" data-kind="fundamento">
+<h2><span class="n">03</span> Capa 4: el harness es el manual y la credencial del agente</h2>
+<p>Un empleado con las llaves de la oficina, sin manual ni límites, es un riesgo. Por eso existe la cuarta capa. El <span class="gterm" data-def="A estrutura que envolve o agente: instruções fixas, ferramentas liberadas, permissões, receitas prontas, gatilhos automáticos, conexões com outros sistemas e memória. É o que faz o agente trabalhar do seu jeito." tabindex="0">harness</span> es todo lo que rodea al agente para que trabaje a tu manera: el manual de «cómo hacemos las cosas aquí», la credencial que indica qué puede abrir por su cuenta y qué debe pedir, las recetas para tareas repetidas, los avisos automáticos, las puertas de acceso al calendario y al correo electrónico.</p>
+<p>Camila, dentista, no quiere un agente que envíe mensajes a pacientes por su cuenta. En su harness está escrito: "mensajes a pacientes solo con mi aprobación; agenda e inventario, puede modificar". Esto no es programación. Es una hoja de reglas que el agente lee cada vez que empieza a trabajar. La clase 4 explica el harness pieza por pieza.</p>
+<div class="quiz" data-answer="b">
+<p class="qk">Ponte a prueba</p><p class="q">Helena quiere que el agente prepare solo el informe semanal de producción, pero que nunca envíe nada a la dirección sin que ella lo lea. ¿En qué capa vive esta regla?</p>
+<button class="opt" data-k="a">En el chat web, escribiendo la regla al inicio de cada conversación.</button>
+<button class="opt" data-fb="Isso. Permissões e regras fixas são o harness: ficam escritas uma vez e valem em toda sessão do agente, sem depender de Helena lembrar de repetir." data-k="b">En el harness, como un permiso fijo que el agente lee cada vez.</button>
+<button class="opt" data-k="c">En el editor de código, dentro del informe.</button>
+<p class="qfb"></p>
+</div>
+<div class="mobfig" data-mobfig="3"></div>
+<button class="readbtn" data-read="s3">marcar como leído</button>
+</section>
+<section class="step" data-fig="4" data-kind="fundamento">
+<h2><span class="n">04</span> Por qué gana el terminal: cierra el ciclo</h2>
+<p>Toda tarea útil con IA pasa por un ciclo: entender la solicitud, planificar, hacer, revisar el resultado, corregir y entregar. El chat web se detiene en "planificar": te dice qué hacer y tú lo haces. El editor hace una parte, en el archivo abierto, y tú revisas. El agente en el terminal recorre el ciclo completo porque tiene acceso a los archivos, puede ejecutar y puede revisar lo que salió.</p>
+<p>Denise, consultora de marketing, le pidió al agente: "genera el informe mensual de los tres clientes con los datos de esta carpeta y usa el modelo del mes pasado". El agente leyó los datos, preparó los tres informes, notó que faltaba una hoja de cálculo de un cliente, se lo avisó y entregó los otros dos listos. En el chat habría pegado datos durante una hora y habría descubierto que faltaba la hoja de cálculo después de enviarlos.</p>
+<p>Por eso el terminal es la mejor capa. No es la más bonita ni la más fácil de abrir la primera vez. Es la única en la que la IA tiene manos y ojos al mismo tiempo: hace, verifica y corrige sin que tengas que intervenir.</p>
+<div class="qanchor"><p>El chat responde. El terminal ejecuta. El harness garantiza que lo haga a tu manera.</p></div>
+<div class="mobfig" data-mobfig="4"></div>
+<button class="readbtn" data-read="s4">marcar como leído</button>
+</section>
+<!-- modo analise justificado: decidir camada é decisão de gestão que precede qualquer uso real; treina-se num caso antes de decidir com ferramenta de verdade -->
+<section class="practice" data-mode="analise" data-practice="p2">
+<p class="pk">Practica ahora <span class="pcount">0/3 completados</span></p>
+<h3 class="ph">El caso de Helena: clasifica las tareas por capa</h3>
+<p class="pgoal">En unos 8 minutos, lee el caso, decide la capa de cada tarea y compara con la clave de respuestas. Te llevarás el mapa de capas aplicado a una semana real.</p>
+<p class="psafe">Es un análisis en papel: no se abre ninguna herramienta. Si tu respuesta difiere de la clave, lee la justificación: en las decisiones sobre capas, la diferencia suele estar en «cuántos archivos» y «si se repite o no».</p>
+<p><b>El caso.</b> Helena, directora de operaciones, enumeró cuatro cosas de la semana: (1) responder un correo electrónico delicado de un proveedor atrasado; (2) cruzar las 12 hojas de cálculo de turnos para encontrar las paradas de máquina sin justificar; (3) todos los lunes, armar el informe de producción de la semana anterior con el mismo modelo, a partir de los archivos que genera la fábrica; (4) el ingeniero de procesos quiere hacer un ajuste rápido en un archivo de cálculo que tiene abierto en su pantalla.</p>
+<ol class="psteps">
+<li><label><input data-ptask="1" type="checkbox"/> <span>Para cada una de las cuatro tareas, escribe la capa: chat, editor, terminal o harness. Una línea por tarea.</span></label></li>
+<li><label><input data-ptask="2" type="checkbox"/> <span>Junto a cada línea, escribe el motivo en tres palabras (p. ej., «un solo texto», «muchos archivos», «se repite cada semana»).</span></label></li>
+<li><label><input data-ptask="3" type="checkbox"/> <span>Abre la clave de respuestas de abajo y compara. Terminaste cuando entiendas la justificación de cada una, estés de acuerdo o no.</span></label></li>
+</ol>
+<details><summary>Clave de respuestas comentada</summary>
+<p>(1) <b>Chat web.</b> Un texto, una respuesta, el tono importa: es el mejor uso de la capa 1. (2) <b>Terminal.</b> Doce archivos, cruce y verificación: solo el agente con acceso a la carpeta completa el ciclo. (3) <b>Terminal + harness.</b> Es una tarea con varios archivos que se repite cada semana con el mismo modelo: el agente la ejecuta, y el modelo y la regla «no envíes sin que yo lo lea» quedan escritos en el harness. (4) <b>Editor.</b> Un único archivo, abierto en la pantalla de quien programa: la capa 2 lo resuelve en el momento.</p>
+</details>
+<p class="pdone">Acabas de aplicar el mapa de las capas a una semana de trabajo, tarea por tarea.</p>
+</section>
+</div>
+<aside class="rail"><div class="railsticky">
+<div class="figstage">
+<div class="fig on" data-cap="&lt;b&gt;Fig. 1&lt;/b&gt; A camada 2 enxerga só o arquivo aberto na tela. O resto da pasta fica no escuro, e a execução continua com você." data-fig="1">
+<svg aria-hidden="true" fill="none" viewbox="0 0 220 200">
+<rect class="box" height="110" rx="8" width="180" x="20" y="30"></rect><text class="lbl" text-anchor="middle" x="110" y="50">pantalla del editor</text>
+<rect class="boxon" height="66" rx="6" width="90" x="34" y="60"></rect><text class="hi" text-anchor="middle" x="79" y="88">archivo</text><text class="lbl" text-anchor="middle" x="79" y="102">abierto</text>
+<rect class="box" height="66" rx="6" width="50" x="136" y="60"></rect><text class="hi" text-anchor="middle" x="161" y="90">IA</text><text class="lbl" text-anchor="middle" x="161" y="104">sugiere</text>
+<rect class="box" height="22" rx="4" stroke-dasharray="3 3" width="34" x="30" y="156"></rect><rect class="box" height="22" rx="4" stroke-dasharray="3 3" width="34" x="72" y="156"></rect><rect class="box" height="22" rx="4" stroke-dasharray="3 3" width="34" x="114" y="156"></rect><rect class="box" height="22" rx="4" stroke-dasharray="3 3" width="34" x="156" y="156"></rect>
+<text class="lbl" text-anchor="middle" x="110" y="194">otros archivos: invisibles</text>
+</svg>
+</div>
+<div class="fig" data-cap="&lt;b&gt;Fig. 2&lt;/b&gt; No terminal o agente tem a pasta inteira ao alcance: lê, executa, confere. Você entra no início (pedido) e no fim (resultado)." data-fig="2">
+<svg aria-hidden="true" fill="none" viewbox="0 0 220 200">
+<rect class="box" height="160" rx="10" width="188" x="16" y="20"></rect>
+<text class="hi" x="28" y="40">$ terminal</text>
+<rect class="boxon" height="26" rx="5" width="70" x="28" y="52"></rect><text class="hi" text-anchor="middle" x="63" y="69">agente</text>
+<rect class="box" height="110" rx="6" width="72" x="120" y="52"></rect><text class="lbl" text-anchor="middle" x="156" y="68">carpeta</text>
+<rect class="boxon" height="12" rx="2" width="56" x="128" y="76"></rect><rect class="boxon" height="12" rx="2" width="56" x="128" y="94"></rect><rect class="boxon" height="12" rx="2" width="56" x="128" y="112"></rect><rect class="boxon" height="12" rx="2" width="56" x="128" y="130"></rect>
+<path class="lnon" d="M98 60c14 0 14 20 30 22M98 66c14 0 14 34 30 36M98 72c14 0 14 50 30 52"></path>
+<text class="lbl" text-anchor="middle" x="63" y="100">lee</text><text class="lbl" text-anchor="middle" x="63" y="116">ejecuta</text><text class="lbl" text-anchor="middle" x="63" y="132">comprueba</text>
+<text text-anchor="middle" x="110" y="194">tú: pedido → resultado</text>
+</svg>
+</div>
+<div class="fig" data-cap="&lt;b&gt;Fig. 3&lt;/b&gt; O harness envolve o agente: regras fixas por cima, permissões na porta, receitas e conexões ao lado. O agente age dentro desse contorno." data-fig="3">
+<svg aria-hidden="true" fill="none" viewbox="0 0 220 200">
+<rect class="box" height="172" rx="14" stroke-dasharray="5 4" width="192" x="14" y="14"></rect>
+<text class="wm" text-anchor="middle" x="110" y="34">harness</text>
+<rect class="boxon" height="44" rx="8" width="80" x="70" y="80"></rect><text class="hi" text-anchor="middle" x="110" y="106">agente</text>
+<rect class="box" height="20" rx="4" width="160" x="30" y="46"></rect><text class="lbl" text-anchor="middle" x="110" y="60">instrucciones fijas</text>
+<rect class="box" height="36" rx="4" width="38" x="24" y="84"></rect><text class="lbl" text-anchor="middle" x="43" y="99">permiso</text><text class="lbl" text-anchor="middle" x="43" y="111">siones</text>
+<rect class="box" height="36" rx="4" width="38" x="158" y="84"></rect><text class="lbl" text-anchor="middle" x="177" y="99">ícono</text><text class="lbl" text-anchor="middle" x="177" y="111">xiones</text>
+<rect class="box" height="20" rx="4" width="74" x="30" y="136"></rect><text class="lbl" text-anchor="middle" x="67" y="150">recetas</text>
+<rect class="box" height="20" rx="4" width="74" x="116" y="136"></rect><text class="lbl" text-anchor="middle" x="153" y="150">activadores</text>
+<text class="lbl" text-anchor="middle" x="110" y="176">memoria</text>
+</svg>
+</div>
+<div class="fig" data-cap="&lt;b&gt;Fig. 4&lt;/b&gt; O ciclo completo. O chat para no plano; o editor faz um pedaço; o terminal percorre tudo, inclusive conferir e corrigir." data-fig="4">
+<svg aria-hidden="true" fill="none" viewbox="0 0 220 200">
+<circle class="ln" cx="110" cy="100" r="66"></circle>
+<circle class="boxon" cx="110" cy="34" r="12"></circle><text text-anchor="middle" x="110" y="14">pedido</text>
+<circle class="boxon" cx="167" cy="67" r="12"></circle><text text-anchor="middle" x="196" y="62">plan</text>
+<circle class="box" cx="167" cy="133" r="12"></circle><text class="wm" text-anchor="middle" x="196" y="150">haz</text>
+<circle class="box" cx="110" cy="166" r="12"></circle><text class="wm" text-anchor="middle" x="110" y="192">comprueba</text>
+<circle class="box" cx="53" cy="133" r="12"></circle><text class="wm" text-anchor="middle" x="24" y="150">corrige</text>
+<circle class="box" cx="53" cy="67" r="12"></circle><text class="wm" text-anchor="middle" x="24" y="62">entrega</text>
+<path class="lnwm" d="M150 52l8 10"></path>
+<text class="lbl" text-anchor="middle" x="110" y="96">el chat se detiene aquí ↑</text>
+<text class="hi" text-anchor="middle" x="110" y="112">el terminal se cierra</text>
+</svg>
+</div>
+</div>
+<p class="railcap"></p>
+<div class="steps-ind"></div>
+<p class="sidenote">Resalta cualquier fragmento para convertirlo en una tarjeta de repaso.</p>
+</div></aside>
+</div>
+<div class="fecho-wrap">
+<div class="recap-autor">
+<p class="rak">Resumen</p>
+<ul>
+<li>Son cuatro capas: el chat en el navegador, la IA dentro del editor, el agente en el terminal y el harness a su alrededor. Cada una tiene una ventaja y un límite.</li>
+<li>El editor ve el archivo abierto y lo edita ahí, pero solo eso; sirve sobre todo a quienes programan.</li>
+<li>El terminal es la ventana directa a la computadora. Un agente allí lee la carpeta, ejecuta, verifica y corrige, sin que tengas que trasladar nada. Por eso gana.</li>
+<li>El harness es el manual y la credencial: reglas, permisos y recetas escritas una vez para que el agente actúe a tu manera.</li>
+</ul>
+</div>
+<div class="next-action">
+<p class="nak">Tu siguiente paso</p>
+<p class="na-win">Acabas de ubicar cualquier herramienta de IA en una de las cuatro capas, con la ventaja y el límite de cada una.</p>
+<p class="na-action">En los próximos 15 minutos: toma la frase del punto de bloqueo de la clase 1 y escribe al lado en qué capa se resuelve. Si la respuesta es «varios archivos» o «se repite», la respuesta es terminal.</p>
+<p class="na-hook">En la próxima clase verás una sesión real de un agente en el terminal, línea por línea, y aprenderás a reconocer cuándo leyó, ejecutó, pidió permiso y verificó.</p>
+</div>
+</div>
+<nav class="lnav"><a href="#aula-1">← lección 1</a><a href="#aula-3">lección 3 →</a></nav>
+<footer>Clase 2 · INEMA.CLUB PRO</footer>
+<script id="cards-2" type="application/json">
+[
+  {"front":"Um colega diz que 'a IA do editor resolve tudo' e quer padronizar o escritório de arquitetura nela. Que pergunta você faz para testar se ele está certo?","back":"'Quantos dos nossos trabalhos são um arquivo de código aberto na tela?' Quase nenhum: propostas, plantas e orçamentos são muitos arquivos. A camada 2 serve a quem programa; o escritório precisa do terminal."},
+  {"front":"O agente entregou um relatório com um número errado. Em qual etapa do ciclo o terminal tem uma vantagem que o chat não tem para esse problema?","back":"Na etapa de conferir: o agente no terminal pode abrir o arquivo de origem, comparar e corrigir. No chat, quem confere é você, com o arquivo colado à mão."},
+  {"front":"Qual é a diferença entre o agente (camada 3) e o harness (camada 4)?","back":"O agente é quem age: lê, executa, confere. O harness é o que está em volta dele: instruções fixas, permissões, receitas, conexões, memória. Um trabalha; o outro define como o trabalho deve ser feito."},
+  {"front":"Camila quer que o agente reorganize a agenda da clínica, mas nunca envie mensagem a paciente sem aprovação. Onde cada parte desse pedido vive?","back":"'Reorganizar a agenda' é trabalho do agente no terminal. 'Nunca enviar sem aprovação' é uma permissão escrita no harness, válida em toda sessão."},
+  {"front":"Por que a aula chama o terminal de 'balcão direto com o computador' e não de 'programa'?","back":"Porque não é um programa com botões: é a janela de texto em que se fala com a máquina sem intermediário. Por isso um agente ali consegue fazer o que uma pessoa faria clicando, só que por escrito e conferindo."}
+]
+</script>
+<!-- COMPLETUDE aula-2 | tipo=FUNDAMENTO | steps=4
+  [OK] promise            .promise no cold-open (1)
+  [OK] why                .why após a promessa (1)
+  [OK] tempo              data-tempo no view + render no cold-open (1)
+  [OK] exemplo-profissao  exemplo aplicado em 100% dos steps (4/4: Rafael, Rafael, Camila, Denise)
+  [OK] apoio-visual       figura conceitual legendada em 100% dos steps (4/4, data-fig 1..4)
+  [OK] practice           .practice[data-mode="analise"] (exatamente 1; modo justificado: decisão de camada precede qualquer uso real)
+  [OK] psafe              .psafe dentro da prática (1)
+  [OK] pgoal-tempo        .pgoal com tempo declarado (~8 min) (1)
+  [OK] recap-autor        .recap-autor no fecho (1)
+  [OK] next-action        .next-action no fecho (1)
+  [OK] cards              <script id="cards-2"> presente (5 cartões: aplicação, diagnóstico, contraste, decisão, pergunta)
+  [OK] anti-duplicacao    §11.3 — 3 testes passam (substring / forma / operação)
+  [OK] teste-se-FUND      tipo=FUNDAMENTO: presente (1 quiz data-fb)
+  Dosagem: quiz + cards + qbefore-after (step 2) + qanchor (step 4) = 4 obrigatórios, 0 opcional. Densidade: quadros nos steps 2 e 4, steps 1 e 3 só prosa (+quiz).
+-->
+</section>
+<!-- =====================================================================
+     AULA 3 — FERRAMENTA
+     ===================================================================== -->
+<section class="view" data-aula="3" data-tempo="17min" id="v-aula-3">
+<header class="hero"><div class="hero-inner">
+<div>
+<p class="kicker">Clase 3 · Herramienta</p>
+<h1>El terminal<br/><em>en la práctica</em></h1>
+<p class="promise">Al final de esta clase podrás leer una sesión real de un agente en la terminal y señalar, línea por línea, dónde leyó archivos, dónde ejecutó, dónde pidió permiso y dónde revisó el resultado.</p>
+<p class="why">La primera vez que alguien abre una terminal, la pantalla negra asusta y la persona la cierra. Eso aleja precisamente a quienes más podrían aprovecharla. Esta clase disipa el miedo mostrando qué aparece en la pantalla y qué significa cada línea, para que sepas qué estás viendo cuando alguien de tu equipo, o tú, se siente allí.</p>
+<p class="cue"><span class="arw">↓</span> rol para estudiar</p>
+</div>
+<div class="herofig"><svg aria-hidden="true" fill="none" viewbox="0 0 300 240">
+<!-- metáfora: balcão de atendimento — você de um lado, o funcionário com a chave do outro, o pedido por escrito no meio -->
+<rect class="fl" height="12" rx="3" width="260" x="20" y="150"></rect>
+<rect class="fl" height="30" rx="0" width="260" x="20" y="162"></rect>
+<circle class="st" cx="70" cy="96" r="16"></circle><path class="st" d="M44 150c4-22 14-32 26-32s22 10 26 32"></path>
+<circle class="sta" cx="232" cy="90" r="16"></circle><path class="sta" d="M206 150c4-22 14-32 26-32s22 10 26 32"></path>
+<path class="stw" d="M254 106l14-10 8 6-6 8"></path><circle class="stw" cx="268" cy="96" r="3.5"></circle>
+<rect class="fl" height="50" rx="6" width="86" x="110" y="70"></rect>
+<text class="lbl" text-anchor="middle" x="153" y="90">"arma la tabla"</text>
+<text class="hi" text-anchor="middle" x="153" y="108">"14 leídos, listo"</text>
+<path class="st" d="M100 96h8"></path><path class="sta" d="M198 96h8"></path>
+<text class="lbl" text-anchor="middle" x="70" y="215">tú pides</text>
+<text class="hi" text-anchor="middle" x="232" y="215">él tiene la llave</text>
+</svg></div>
+</div></header>
+<div class="layout">
+<div class="col">
+<section class="step" data-fig="1" data-kind="ferramenta" data-versao="macOS Terminal · Windows Terminal, set/2026">
+<h2><span class="n">01</span> Abrir la terminal es abrir una ventana de texto</h2>
+<p>En la computadora de cualquiera hay un programa llamado Terminal (en Mac) o Terminal de Windows. Abre una ventana casi vacía con un cursor parpadeando. Eso es todo. No se activó ni modificó nada. Es una hoja en blanco que espera una solicitud por escrito.</p>
+<p>Rafael abrió el suyo por primera vez esperando «algo de programadores». Vio el cursor y escribió, sin entender mucho, el comando que le indicó su sobrino. La computadora respondió con la lista de sus carpetas. La pantalla negra solo asusta hasta que responde por primera vez.</p>
+<p>Lo que verás a continuación es una receta mínima: una solicitud de una palabra y la respuesta de la computadora. No necesitas memorizar nada, solo reconocer el formato de pregunta y respuesta.</p>
+<div class="mobfig">
+<div class="termdemo">
+<button class="termdemo-reveal" type="button">ver lo que sucede →</button>
+<div class="termdemo-body" hidden="">
+<div class="termdemo-cmd on" data-variant="ok">
+<p class="termdemo-k">solicitud y respuesta</p>
+<pre class="termdemo-in">$ ls</pre>
+<pre class="termdemo-out">Propostas   Plantas   Contratos   Fotos-obra</pre>
+</div>
+</div>
+</div>
+</div>
+<button class="readbtn" data-read="s1">marcar como leído</button>
+</section>
+<section class="step" data-fig="2" data-kind="ferramenta" data-versao="Claude Code, set/2026">
+<h2><span class="n">02</span> Llamar al agente y hacerle el pedido en portugués</h2>
+<p>Con la terminal abierta en la carpeta correcta, una palabra llama al agente (en el ejemplo, Claude Code). A partir de ahí, escribes el pedido en portugués común, como se lo escribirías a un empleado. La diferencia con el chat es que el agente está dentro de la carpeta: puede leer los archivos sin que tengas que pegar nada.</p>
+<p>Denise, consultora de marketing, hace esto para el informe mensual: entra en la carpeta del cliente, llama al agente y escribe "prepara el informe de septiembre con el modelo de agosto y los datos de las hojas de cálculo de esta carpeta". El agente enumera lo que va a hacer, lee los archivos y empieza.</p>
+<div class="qerr">
+<p class="qk">Error común</p>
+<p class="qerr-txt"><b>Llamar al agente desde la carpeta equivocada.</b> Solo ve la carpeta desde la que se abrió y las que están dentro de ella. Si lo abriste en toda la carpeta "Documentos", revisará todo y tardará; si lo abriste en una carpeta vacía, dirá que no encontró nada. Antes de llamarlo, revisa el nombre de la carpeta en la respuesta de la computadora.</p>
+</div>
+<div class="mobfig">
+<div class="termdemo">
+<button class="termdemo-reveal" type="button">ver lo que sucede →</button>
+<div class="termdemo-body" hidden="">
+<div class="termdemo-cmd on" data-variant="ok">
+<p class="termdemo-k">en la carpeta correcta</p>
+<pre class="termdemo-in">$ cd Clientes/Padaria-Nova
+$ claude
+&gt; monte o relatório de setembro no modelo do de agosto, com as planilhas desta pasta</pre>
+<pre class="termdemo-out">Vou ler: agosto-relatorio.docx, setembro-vendas.xlsx, setembro-redes.xlsx
+Lendo 3 arquivos… Montando relatorio-setembro.docx</pre>
+</div>
+<div class="termdemo-cmd" data-variant="erro">
+<p class="termdemo-k">en la carpeta equivocada</p>
+<pre class="termdemo-in">$ claude
+&gt; monte o relatório de setembro no modelo do de agosto</pre>
+<pre class="termdemo-out termdemo-err">Não encontrei nenhuma planilha nem relatório de agosto nesta pasta (Documentos).
+Quer que eu procure nas subpastas? Isso pode demorar.</pre>
+</div>
+<button class="termdemo-toggle" type="button">ver el error común</button>
+</div>
+</div>
+</div>
+<button class="readbtn" data-read="s2">marcar como leído</button>
+</section>
+<section class="step" data-fig="3" data-kind="ferramenta" data-versao="Claude Code, set/2026">
+<h2><span class="n">03</span> El agente pide permiso antes de modificar lo que importa</h2>
+<p>El agente lee archivos por su cuenta. Para crear, modificar o eliminar, pregunta antes, y tú respondes sí o no. Es la misma lógica que con un empleado nuevo: puede consultar libremente, pero antes de firmar cualquier cosa, viene a preguntar. En la clase 4 verás cómo cambiar este comportamiento mediante el harness; por defecto, pregunta.</p>
+<p>A Camila, dentista, le gusta esto. Cuando le pidió al agente que "reorganizara la carpeta de radiografías por paciente", este le mostró el plan, le avisó que iba a mover 212 archivos y esperó su aprobación. Ella leyó el plan, vio que iba a separar por apellido y no por nombre, lo corrigió en una frase y entonces sí le dio el visto bueno.</p>
+<p>Lo que aparece en pantalla siempre tiene el mismo formato: qué quiere hacer, sobre qué y la pregunta. Abajo, un ejemplo.</p>
+<div class="mobfig">
+<div class="termdemo">
+<button class="termdemo-reveal" type="button">ver lo que sucede →</button>
+<div class="termdemo-body" hidden="">
+<div class="termdemo-cmd on" data-variant="ok">
+<p class="termdemo-k">solicitud de permiso</p>
+<pre class="termdemo-in">&gt; reorganize a pasta Radiografias em subpastas por paciente</pre>
+<pre class="termdemo-out">Plano: criar 48 subpastas (uma por paciente, pelo nome no arquivo)
+e mover 212 arquivos. Nenhum arquivo será apagado.
+Posso mover os arquivos? [s/n]</pre>
+</div>
+</div>
+</div>
+</div>
+<button class="readbtn" data-read="s3">marcar como leído</button>
+</section>
+<section class="step" data-fig="4" data-kind="ferramenta" data-versao="Claude Code, set/2026">
+<h2><span class="n">04</span> Él revisa lo que hizo y dice qué no pudo hacer</h2>
+<p>La parte que distingue al agente del chat está al final: después de hacerlo, revisa el resultado. ¿Contó los archivos movidos? ¿Coincide con el plan? ¿Se abrió el informe? Si algo no cuadra, lo dice, en vez de entregar algo bonito pero incorrecto. Helena lo llama «el empleado que revisa antes de traerlo a mi escritorio».</p>
+<p>En el informe semanal de producción, el agente de Helena avisó: «el turno de la noche del jueves no tiene hoja de cálculo; preparé el informe sin ese turno y marqué el dato faltante en rojo». En el chat, ese vacío habría pasado desapercibido hasta la reunión de dirección.</p>
+<div class="qsteps">
+<p class="qsk">Qué buscar en una sesión con un agente</p>
+<ol>
+<li><b>Leyó:</b> la lista de los archivos que abrió, antes de hacer cualquier cosa.</li>
+<li><b>Planificó:</b> lo que va a hacer, en pocas líneas, antes de hacerlo.</li>
+<li><b>Pidió permiso:</b> la pregunta con [s/n] antes de crear, mover o borrar.</li>
+<li><b>Ejecutó:</b> las líneas de «creando», «moviendo», «armando».</li>
+<li><b>Verificaste:</b> el recuento final y los avisos sobre lo que faltó o no coincidió.</li>
+</ol>
+</div>
+<div class="mobfig" data-mobfig="4"></div>
+<button class="readbtn" data-read="s4">marcar como leído</button>
+</section>
+<!-- modo analise justificado: para este público, abrir um terminal e dar permissões reais num computador de trabalho é ação com consequência; treina-se lendo uma sessão real antes de sentar numa -->
+<section class="practice" data-mode="analise" data-practice="p3">
+<p class="pk">Practica ahora <span class="pcount">0/3 completados</span></p>
+<h3 class="ph">Lee la sesión de Rafael y marca las cinco etapas</h3>
+<p class="pgoal">En unos 8 minutos, lee la transcripción de abajo, numera dónde el agente leyó, planificó, pidió permiso, ejecutó y revisó, y compara con la clave de respuestas.</p>
+<p class="psafe">Es una lectura, no se ejecuta nada. Quien ya se sienta cómodo puede, después, abrir su propio terminal y escribir solo la primera línea de la lección (el comando para listar), que no cambia nada. No es obligatorio para esta práctica.</p>
+<p><b>La sesión.</b> Rafael escribió en la carpeta Propuestas: "arma una tabla con el nombre del cliente, el área y el precio por metro cuadrado de cada propuesta de esta carpeta". En pantalla apareció, en este orden: (a) "Encontré 14 archivos: proposta-alves.pdf, proposta-bento.pdf…"; (b) "Voy a extraer el cliente, el área y el valor de cada uno, y calcular el precio por m²"; (c) "¿Puedo crear el archivo tabela-propostas.xlsx en esta carpeta? [s/n]"; (d) "Creando tabela-propostas.xlsx… 14 filas"; (e) "Verifiqué: 14 propuestas, 14 filas. A proposta-lima.pdf le falta el área; dejé la celda en blanco y la marqué en amarillo."</p>
+<ol class="psteps">
+<li><label><input data-ptask="1" type="checkbox"/> <span>Escribe de (a) a (e) y, junto a cada letra, una de las cinco etapas: leyó, planificó, pidió permiso, ejecutó, revisó.</span></label></li>
+<li><label><input data-ptask="2" type="checkbox"/> <span>Responde: si Rafael hubiera dicho "no" en (c), ¿qué habría pasado con su carpeta? Escríbelo en una línea.</span></label></li>
+<li><label><input data-ptask="3" type="checkbox"/> <span>Compara con la clave de respuestas. Listo cuando coincidan las cinco etapas y la respuesta del punto 2 sea "nada".</span></label></li>
+</ol>
+<details><summary>Clave de respuestas comentada</summary>
+<p>(a) leyó · (b) planificó · (c) pidió permiso · (d) ejecutó · (e) verificó. Si Rafael decía "no" en (c), no se creaba nada: la carpeta quedaba exactamente como estaba, porque el permiso va antes de cualquier cambio. Fíjate también en que la etapa (e) señaló una laguna (la propuesta sin área) en vez de inventar un número: es el comportamiento que quieres de un agente y es algo que el chat no puede hacer.</p>
+</details>
+<p class="pdone">Acabas de leer una sesión completa de un agente sabiendo qué significa cada línea. La pantalla negra dejó de ser negra.</p>
+</section>
+</div>
+<aside class="rail"><div class="railsticky">
+<div class="figstage">
+<div class="fig termdemo on" data-cap="&lt;b&gt;Fig. 1&lt;/b&gt; Um pedido de uma palavra e a resposta. Nada muda no computador: é só uma pergunta e a lista." data-fig="1">
+<button class="termdemo-reveal" type="button">ver lo que sucede →</button>
+<div class="termdemo-body" hidden="">
+<div class="termdemo-cmd on" data-variant="ok">
+<p class="termdemo-k">solicitud y respuesta</p>
+<pre class="termdemo-in">$ ls</pre>
+<pre class="termdemo-out">Propostas   Plantas   Contratos   Fotos-obra</pre>
+</div>
+</div>
+</div>
+<div class="fig termdemo" data-cap="&lt;b&gt;Fig. 2&lt;/b&gt; Na pasta certa o agente acha os arquivos e começa. Na errada, ele avisa que não achou. Alterne para ver o erro comum." data-fig="2">
+<button class="termdemo-reveal" type="button">ver lo que sucede →</button>
+<div class="termdemo-body" hidden="">
+<div class="termdemo-cmd on" data-variant="ok">
+<p class="termdemo-k">en la carpeta correcta</p>
+<pre class="termdemo-in">$ cd Clientes/Padaria-Nova
+$ claude
+&gt; monte o relatório de setembro no modelo do de agosto, com as planilhas desta pasta</pre>
+<pre class="termdemo-out">Vou ler: agosto-relatorio.docx, setembro-vendas.xlsx, setembro-redes.xlsx
+Lendo 3 arquivos… Montando relatorio-setembro.docx</pre>
+</div>
+<div class="termdemo-cmd" data-variant="erro">
+<p class="termdemo-k">en la carpeta equivocada</p>
+<pre class="termdemo-in">$ claude
+&gt; monte o relatório de setembro no modelo do de agosto</pre>
+<pre class="termdemo-out termdemo-err">Não encontrei nenhuma planilha nem relatório de agosto nesta pasta (Documentos).
+Quer que eu procure nas subpastas? Isso pode demorar.</pre>
+</div>
+<button class="termdemo-toggle" type="button">ver el error común</button>
+</div>
+</div>
+<div class="fig termdemo" data-cap="&lt;b&gt;Fig. 3&lt;/b&gt; Antes de mover ou criar, o agente mostra o plano, a quantidade e pergunta. Um 'n' deixa tudo como estava." data-fig="3">
+<button class="termdemo-reveal" type="button">ver lo que sucede →</button>
+<div class="termdemo-body" hidden="">
+<div class="termdemo-cmd on" data-variant="ok">
+<p class="termdemo-k">solicitud de permiso</p>
+<pre class="termdemo-in">&gt; reorganize a pasta Radiografias em subpastas por paciente</pre>
+<pre class="termdemo-out">Plano: criar 48 subpastas (uma por paciente, pelo nome no arquivo)
+e mover 212 arquivos. Nenhum arquivo será apagado.
+Posso mover os arquivos? [s/n]</pre>
+</div>
+</div>
+</div>
+<div class="fig" data-cap="&lt;b&gt;Fig. 4&lt;/b&gt; As cinco marcas de uma sessão de agente, na ordem em que aparecem na tela. A última, conferir, é a que o chat não tem." data-fig="4">
+<svg aria-hidden="true" fill="none" viewbox="0 0 220 200">
+<rect class="box" height="26" rx="6" width="172" x="24" y="16"></rect><text text-anchor="middle" x="110" y="33">1 · leyó los archivos</text>
+<rect class="box" height="26" rx="6" width="172" x="24" y="52"></rect><text text-anchor="middle" x="110" y="69">2 · planificó</text>
+<rect class="boxon" height="26" rx="6" width="172" x="24" y="88"></rect><text class="hi" text-anchor="middle" x="110" y="105">3 · pidió permiso [s/n]</text>
+<rect class="box" height="26" rx="6" width="172" x="24" y="124"></rect><text text-anchor="middle" x="110" y="141">4 · ejecutó</text>
+<rect class="box" height="26" rx="6" stroke="var(--warm)" width="172" x="24" y="160"></rect><text class="wm" text-anchor="middle" x="110" y="177">5 · verificó y avisó</text>
+</svg>
+</div>
+</div>
+<p class="railcap"></p>
+<div class="steps-ind"></div>
+<p class="sidenote">Los cuadros con "$" muestran la pantalla real. Haz clic en "ver qué pasa".</p>
+</div></aside>
+</div>
+<div class="fecho-wrap">
+<div class="recap-autor">
+<p class="rak">Resumen</p>
+<ul>
+<li>El terminal es una ventana de texto con un cursor. Abrirlo no cambia nada; una solicitud de una palabra devuelve una lista y se te pasa el susto.</li>
+<li>El agente se inicia en la carpeta donde están los archivos, y la solicitud se hace en portugués. Elegir la carpeta equivocada es el tropiezo más frecuente.</li>
+<li>Lee por su cuenta; para crear, mover o eliminar, muestra el plan y espera tu aprobación.</li>
+<li>Al final, verifica y dice qué faltó. Es la etapa que hace que el resultado sea confiable.</li>
+</ul>
+</div>
+<div class="next-action">
+<p class="nak">Tu siguiente paso</p>
+<p class="na-win">Acabas de leer una sesión de un agente y saber qué hace cada línea.</p>
+<p class="na-action">En los próximos 15 minutos: escribe, en portugués, la solicitud que le harías al agente para la tarea del punto de bloqueo de la clase 1. Empieza por la carpeta: «en la carpeta X, haz Y en la plantilla Z».</p>
+<p class="na-hook">En la próxima clase abrirás el harness: las siete piezas que hacen que el agente trabaje a tu manera, empezando por las instrucciones fijas que lee cada vez.</p>
+</div>
+</div>
+<nav class="lnav"><a href="#aula-2">← lección 2</a><a href="#aula-4">lección 4 →</a></nav>
+<footer>Clase 3 · INEMA.CLUB PRO</footer>
+<script id="cards-3" type="application/json">
+[
+  {"front":"Você chamou o agente e ele respondeu que não encontrou nenhuma planilha. As planilhas existem. Qual é a causa mais provável e como você corrige?","back":"Ele foi aberto na pasta errada e só enxerga onde está. Corrija saindo, entrando na pasta certa e chamando de novo. Confira o nome da pasta antes de chamar."},
+  {"front":"O agente mostrou o plano de mover 212 arquivos e perguntou [s/n]. Você percebeu que a regra de separação está errada. O que faz, e o que acontece com os arquivos?","back":"Responde 'n' ou corrige a regra em uma frase antes de dizer sim. Nada muda até a permissão: a pasta fica intacta. É a etapa 3 (permissão) protegendo as etapas 4 e 5."},
+  {"front":"Qual a diferença entre a etapa 'executou' e a etapa 'conferiu' numa sessão de agente?","back":"Executou é fazer o que foi planejado (criar, mover, montar). Conferiu é olhar o resultado contra o plano e avisar o que não bateu ou faltou. O chat só chega, no máximo, ao plano."},
+  {"front":"Helena recebeu o relatório com a frase 'o turno de quinta não tinha planilha; marquei a lacuna'. Que etapa produziu essa frase, e por que isso vale mais que um relatório 'completo'?","back":"A etapa de conferir. Vale mais porque uma lacuna declarada é decisão dela; um número inventado para 'fechar' passaria despercebido até a reunião."}
+]
+</script>
+<!-- COMPLETUDE aula-3 | tipo=FERRAMENTA | steps=4
+  [OK] promise            .promise no cold-open (1)
+  [OK] why                .why após a promessa (1)
+  [OK] tempo              data-tempo no view + render no cold-open (1)
+  [OK] exemplo-profissao  exemplo aplicado em 100% dos steps (4/4: Rafael, Denise, Camila, Helena)
+  [OK] apoio-visual       figura legendada em 100% dos steps (4/4: termdemo nos steps 1–3 com cópia .mobfig, diagrama no step 4)
+  [OK] practice           .practice[data-mode="analise"] (exatamente 1; modo justificado: permissões reais num computador de trabalho são ação com consequência para este público)
+  [OK] psafe              .psafe dentro da prática (1)
+  [OK] pgoal-tempo        .pgoal com tempo declarado (~8 min) (1)
+  [OK] recap-autor        .recap-autor no fecho (1)
+  [OK] next-action        .next-action no fecho (1)
+  [OK] cards              <script id="cards-3"> presente (4 cartões: diagnóstico, decisão, contraste, diagnóstico)
+  [OK] anti-duplicacao    §11.3 — 3 testes passam (substring / forma / operação)
+  [N/A] teste-se-FUND     aula é FERRAMENTA (obrigação não se aplica); sem teste-se opcional
+  Dosagem: qerr (step 2) + qsteps (step 4) = 2 obrigatórios, cards opcionais (1) = 3 ≤ 5. Densidade: quadros nos steps 2 e 4. termdemo: steps 1 (só certo, sem erro plausível), 2 (certo+erro), 3 (só certo).
+-->
+</section>
+<!-- =====================================================================
+     AULA 4 — FUNDAMENTO
+     ===================================================================== -->
+<section class="view" data-aula="4" data-tempo="21min" id="v-aula-4">
+<header class="hero"><div class="hero-inner">
+<div>
+<p class="kicker">Clase 4 · Fundamento</p>
+<h1>El harness,<br/><em>pieza por pieza</em></h1>
+<p class="promise">Al final de esta clase podrás nombrar las siete piezas del harness y escribir, en portugués, la primera versión de las instrucciones fijas de tu agente, con al menos tres reglas y un límite.</p>
+<p class="why">Un agente sin harness es como un empleado brillante en su primer día: no sabe cómo escribe tu empresa, qué puede firmar ni quién tiene prioridad. Terminas repitiendo todo en cada sesión, el mismo problema que con el chat. El harness convierte a un agente genérico en tu agente, y su pieza más importante cabe en una hoja.</p>
+<p class="cue"><span class="arw">↓</span> rol para estudiar</p>
+</div>
+<div class="herofig"><svg aria-hidden="true" fill="none" viewbox="0 0 300 240">
+<!-- metáfora: manual de procedimentos + crachá com permissões -->
+<rect class="fl" height="150" rx="6" width="120" x="40" y="40"></rect>
+<path class="st" d="M60 70h80M60 90h80M60 110h60M60 130h70M60 150h50"></path>
+<text class="lbl" text-anchor="middle" x="100" y="205">manual: cómo lo hacemos aquí</text>
+<rect class="fl" height="110" rx="8" width="80" x="190" y="70"></rect>
+<circle class="sta" cx="230" cy="105" r="16"></circle>
+<rect class="sta" height="8" rx="2" width="50" x="205" y="132"></rect>
+<rect class="stw" height="8" rx="2" width="34" x="205" y="148"></rect>
+<text class="lbl" text-anchor="middle" x="230" y="205">credencial: qué puede abrir</text>
+<text class="hi" text-anchor="middle" x="150" y="228">el agente lee ambas antes de empezar</text>
+</svg></div>
+</div></header>
+<div class="layout">
+<div class="col">
+<section class="step" data-fig="1" data-kind="fundamento">
+<h2><span class="n">01</span> Pieza 1: las instrucciones fijas son el manual de la casa</h2>
+<p>La primera pieza del harness es una hoja de texto que el agente lee cada vez que empieza a trabajar. Se llama <span class="gterm" data-def="Arquivo de texto simples, em português, com as regras permanentes do seu agente: como escrever, o que priorizar, o que nunca fazer. No Claude Code o nome é CLAUDE.md." tabindex="0">instrucciones fijas</span>. Allí escribes, una sola vez, lo que hoy repites en cada conversación: cómo escribe tu empresa, qué clientes tienen prioridad, qué formato de informe usas y qué nunca debe hacer.</p>
+<p>Denise transformó el documento "reglas de mi escritura", que pegaba a mano en el chat, en esta hoja. Ahora el agente ya empieza sabiendo: "tono directo, sin jerga, párrafos cortos, nunca prometer resultados de campaña". Ya no pega nada. Resolvió con una hoja el problema de la memoria entre conversaciones que faltaba en la clase 1.</p>
+<div class="qbefore-after">
+<div class="qba-col qba-before"><p class="qba-lbl">sin instrucciones fijas</p><p class="qba-txt">Denise explica el tono y las reglas en cada sesión. Cuando se olvida, el texto sale mal y se da cuenta después de enviarlo.</p></div>
+<div class="qba-col qba-depois"><p class="qba-lbl">con instrucciones fijas</p><p class="qba-txt">Las reglas están en la hoja. Cada sesión empieza con su lectura. ¿Cambió una regla? Edita la hoja; se aplica para siempre.</p></div>
+<p class="qba-saldo"><b>Balance:</b> cero repeticiones por sesión, y el tono equivocado dejó de llegar al cliente.</p>
+</div>
+<div class="mobfig" data-mobfig="1"></div>
+<button class="readbtn" data-read="s1">marcar como leído</button>
+</section>
+<section class="step" data-fig="2" data-kind="fundamento">
+<h2><span class="n">02</span> Piezas 2 y 3: las herramientas son las manos, los permisos son la credencial</h2>
+<p>El agente actúa mediante herramientas: leer y escribir archivos, ejecutar tareas en la computadora, buscar en internet, abrir un sitio. Son sus manos. Sin herramientas, vuelve a ser un chat. La tercera pieza, los permisos, es la credencial: define qué puede hacer por su cuenta y qué debe preguntar. Leer casi siempre está permitido. Eliminar, publicar, enviar, pagar: solo con tu aprobación, o totalmente prohibido.</p>
+<p>Camila decidió la credencial del agente de la clínica en cinco líneas: agenda e inventario, puede modificar; carpeta de radiografías, puede organizar, pero nunca borrar; mensajes a pacientes, solo con su aprobación; datos de historias clínicas, fuera de su alcance. No es un sistema de seguridad que haya comprado. Es una lista escrita que el agente respeta.</p>
+<p>Fíjate en que la herramienta y el permiso se complementan: la herramienta indica lo que puede hacer; el permiso indica lo que está autorizado a hacer.</p>
+<div class="mobfig" data-mobfig="2"></div>
+<button class="readbtn" data-read="s2">marcar como leído</button>
+</section>
+<section class="step" data-fig="3" data-kind="fundamento">
+<h2><span class="n">03</span> Piezas 4 y 5: las skills son recetas, los hooks son disparadores</h2>
+<p>Una tarea que se repite merece una receta. Una <span class="gterm" data-def="Receita pronta, em texto, para uma tarefa repetida: o passo a passo que o agente segue quando você pede aquela tarefa pelo nome." tabindex="0">skill</span> es esto: el paso a paso para «hacer el informe mensual», escrito una vez, con el modelo, el orden y las verificaciones. Después, solo dices «haz el informe mensual» y sigue la receta. Es el patrón de costura reutilizable: corta el mismo vestido en cualquier tela.</p>
+<p>Uno <span class="gterm" data-def="Gatilho automático: uma regra do tipo 'toda vez que acontecer X, faça Y', que o harness executa sem você pedir." tabindex="0">hook</span> es un disparador: «cada vez que termines un informe, compara los totales con la hoja de cálculo» o «avísame antes de publicar cualquier cosa». Helena tiene uno: «al final de cada sesión, enumera lo que cambió y lo que quedó pendiente». No lo pide; sucede.</p>
+<div class="quiz" data-answer="a">
+<p class="qk">Ponte a prueba</p><p class="q">Rafael quiere que, cada vez que el agente arme una propuesta, verifique automáticamente si el precio por metro cuadrado está dentro del rango de la oficina. ¿Eso es una skill o un hook?</p>
+<button class="opt" data-fb="Certo. 'Toda vez que acontecer X, faça Y' é gatilho, ou seja, hook. A skill seria a receita de montar a proposta; o hook é a checagem que dispara sozinha ao final dela." data-k="a">Hook: se activa solo cada vez que termina una propuesta.</button>
+<button class="opt" data-k="b">Skill: es la receta para armar la propuesta.</button>
+<button class="opt" data-k="c">Ninguna de las dos: esto se escribe en las instrucciones fijas.</button>
+<p class="qfb"></p>
+</div>
+<div class="mobfig" data-mobfig="3"></div>
+<button class="readbtn" data-read="s3">marcar como leído</button>
+</section>
+<section class="step" data-fig="4" data-kind="fundamento">
+<h2><span class="n">04</span> Piezas 6 y 7: conexiones, memoria y equipos de agentes</h2>
+<p>La sexta pieza son las conexiones con otros sistemas. El nombre técnico es <span class="gterm" data-def="Padrão que conecta o agente a outros sistemas (agenda, e-mail, planilha na nuvem, CRM), como uma tomada universal. Sigla de Model Context Protocol." tabindex="0">MCP</span>, pero piensa en enchufes: uno para la agenda, otro para el correo electrónico y otro para la hoja de cálculo del equipo. Al conectar el enchufe, el agente empieza a ver ese sistema como ve la carpeta.</p>
+<p>La séptima es la memoria y la división del trabajo. El agente puede guardar lo que aprendió sobre tu manera de trabajar entre sesiones y, en tareas grandes, llamar a otros agentes para que trabajen en paralelo, como un gerente que distribuye una auditoría entre analistas. Helena usa esto al cierre del mes: un agente se ocupa de las hojas de cálculo de turnos, otro de las de mantenimiento, y el principal reúne todo y lo revisa.</p>
+<p>No necesitas conectar las siete piezas el primer día. Las instrucciones fijas y los permisos ya lo cambian todo. El resto se incorpora cuando una tarea lo requiera.</p>
+<div class="mobfig" data-mobfig="4"></div>
+<button class="readbtn" data-read="s4">marcar como leído</button>
+</section>
+<section class="step" data-fig="5" data-kind="fundamento">
+<h2><span class="n">05</span> El ciclo con harness: el mismo agente, a tu manera</h2>
+<p>Une las piezas y el ciclo de la clase 2 mejora. Llega la solicitud y el agente ya leyó el manual de la empresa. Planifica dentro de sus credenciales. Si la tarea tiene una receta, la sigue. Ejecuta con las manos que autorizaste, en los enchufes que conectaste. Revisa, y el disparador de fin de sesión enumera lo que cambió. La próxima vez, lo recuerda.</p>
+<p>Para Camila, la diferencia práctica es que el agente de la clínica se comporta como una recepcionista con diez años en el puesto, y no como una suplente en su primer día. El modelo de IA es el mismo. Lo que cambió fue la hoja que lo acompaña.</p>
+<div class="qanchor"><p>El modelo es el mismo para todos. El harness es lo que hace que sea tuyo.</p></div>
+<div class="mobfig" data-mobfig="5"></div>
+<button class="readbtn" data-read="s5">marcar como leído</button>
+</section>
+<section class="practice" data-mode="prompt" data-practice="p4">
+<p class="pk">Practica ahora <span class="pcount">0/4 completados</span></p>
+<h3 class="ph">Escribe la primera versión de tus instrucciones fijas</h3>
+<p class="pgoal">En unos 12 minutos, usa tu chatbot de siempre para redactar la hoja de instrucciones fijas de tu futuro agente: tres reglas sobre cómo trabajar y un límite sobre lo que nunca hace. Te llevarás la hoja lista para pegarla cuando exista el agente.</p>
+<p class="psafe">Es solo un texto, nada más. No activa ningún agente ni cambia nada en la computadora. Si la respuesta es genérica, es porque faltó tu contexto: agrega un ejemplo real y vuelve a pedirlo.</p>
+<div class="pcodewrap"><button class="pcopy" type="button">copiar</button><pre class="pcode">Você vai me ajudar a escrever as instruções fixas de um agente de IA que vai trabalhar comigo.
+Sou &lt;sua profissão e contexto, ex.: dentista com clínica de 3 cadeiras&gt;.
+As tarefas que ele vai fazer: &lt;2 ou 3 tarefas reais, ex.: organizar agenda, montar relatório mensal&gt;.
+Como eu gosto que as coisas sejam feitas: &lt;tom, formato, prioridades&gt;.
+O que ele nunca deve fazer sem me perguntar: &lt;ex.: enviar mensagem a paciente, apagar arquivos&gt;.
+
+Escreva a folha em português, com estas seções: "Quem eu sou", "Como trabalhamos aqui" (3 a 5 regras curtas), "Pode fazer sozinho", "Só com minha aprovação", "Nunca". Frases curtas, sem jargão.</pre></div>
+<ol class="psteps">
+<li><label><input data-ptask="1" type="checkbox"/> <span>Pega el texto de arriba en tu chatbot y cambia lo que está entre &lt; &gt; por tu caso real.</span></label></li>
+<li><label><input data-ptask="2" type="checkbox"/> <span>Lee la hoja que te devolvió. Deberías ver cinco secciones breves. Si recibiste un texto corrido o genérico, pide "reescribe en viñetas breves con mis ejemplos".</span></label></li>
+<li><label><input data-ptask="3" type="checkbox"/> <span>Corrige a mano lo que no vaya contigo: al menos una regla debe ser algo que solo tú sabrías.</span></label></li>
+<li><label><input data-ptask="4" type="checkbox"/> <span>Guarda la hoja en un lugar tuyo. Estará lista cuando tenga tres reglas de trabajo y al menos un elemento en "Nunca".</span></label></li>
+</ol>
+<p class="pdone">Acabas de escribir la pieza más importante del harness. Cuando exista el agente, será lo primero que lea.</p>
+</section>
+</div>
+<aside class="rail"><div class="railsticky">
+<div class="figstage">
+<div class="fig on" data-cap="&lt;b&gt;Fig. 1&lt;/b&gt; A folha de instruções fixas entra antes de qualquer pedido, em toda sessão. É uma leitura, não uma configuração." data-fig="1">
+<svg aria-hidden="true" fill="none" viewbox="0 0 220 200">
+<rect class="boxon" height="100" rx="6" width="80" x="20" y="30"></rect><path class="lnon" d="M32 50h56M32 66h56M32 82h40M32 98h48M32 114h30"></path><text class="hi" text-anchor="middle" x="60" y="150">instrucciones fijas</text>
+<path class="lnon" d="M104 80h30"></path><path class="lnon" d="M130 76l6 4-6 4"></path>
+<rect class="box" height="48" rx="8" width="64" x="140" y="56"></rect><text text-anchor="middle" x="172" y="84">agente</text>
+<text class="lbl" text-anchor="middle" x="172" y="126">lee primero,</text><text class="lbl" text-anchor="middle" x="172" y="140">después trabaja</text>
+<text class="lbl" text-anchor="middle" x="110" y="184">sesión 1 · sesión 2 · sesión 3 … igual</text>
+</svg>
+</div>
+<div class="fig" data-cap="&lt;b&gt;Fig. 2&lt;/b&gt; Ferramentas são o que ele consegue fazer; permissões filtram o que está autorizado. Ler passa livre; apagar e enviar batem no crachá." data-fig="2">
+<svg aria-hidden="true" fill="none" viewbox="0 0 220 200">
+<text class="lbl" text-anchor="middle" x="46" y="24">herramientas</text>
+<rect class="box" height="22" rx="4" width="60" x="16" y="34"></rect><text text-anchor="middle" x="46" y="49">leer</text>
+<rect class="box" height="22" rx="4" width="60" x="16" y="64"></rect><text text-anchor="middle" x="46" y="79">escribir</text>
+<rect class="box" height="22" rx="4" width="60" x="16" y="94"></rect><text text-anchor="middle" x="46" y="109">ejecutar</text>
+<rect class="box" height="22" rx="4" width="60" x="16" y="124"></rect><text text-anchor="middle" x="46" y="139">enviar</text>
+<rect class="box" height="22" rx="4" width="60" x="16" y="154"></rect><text text-anchor="middle" x="46" y="169">borrar</text>
+<rect class="wm" height="150" rx="2" width="6" x="100" y="30"></rect><text class="wm" text-anchor="middle" x="103" y="22">credencial</text>
+<path class="lnon" d="M76 45h60"></path><text class="hi" text-anchor="middle" x="170" y="49">libre</text>
+<path class="lnon" d="M76 75h60"></path><text class="hi" text-anchor="middle" x="170" y="79">libre</text>
+<path class="lnwm" d="M76 105h60"></path><text class="wm" text-anchor="middle" x="170" y="109">pregunta</text>
+<path class="lnwm" d="M76 135h60"></path><text class="wm" text-anchor="middle" x="170" y="139">pregunta</text>
+<path class="lnwm" d="M76 165h22"></path><path class="lnwm" d="M96 158l8 14M104 158l-8 14"></path><text class="lbl" text-anchor="middle" x="170" y="169">nunca</text>
+</svg>
+</div>
+<div class="fig" data-cap="&lt;b&gt;Fig. 3&lt;/b&gt; Skill: você chama pelo nome e o agente segue a receita. Hook: um evento dispara a ação sem ninguém pedir." data-fig="3">
+<svg aria-hidden="true" fill="none" viewbox="0 0 220 200">
+<text class="hi" text-anchor="middle" x="60" y="22">skill</text>
+<rect class="boxon" height="22" rx="4" width="84" x="18" y="32"></rect><text text-anchor="middle" x="60" y="47">"haz el informe"</text>
+<path class="lnon" d="M60 56v14"></path>
+<rect class="box" height="70" rx="6" width="84" x="18" y="72"></rect><text class="lbl" text-anchor="middle" x="60" y="90">1. leer datos</text><text class="lbl" text-anchor="middle" x="60" y="106">2. modelo</text><text class="lbl" text-anchor="middle" x="60" y="122">3. armar</text><text class="lbl" text-anchor="middle" x="60" y="136">4. verificar</text>
+<text class="wm" text-anchor="middle" x="160" y="22">hook</text>
+<rect class="box" height="22" rx="4" width="80" x="120" y="32"></rect><text class="lbl" text-anchor="middle" x="160" y="47">el informe termina</text>
+<path class="lnwm" d="M160 56v14"></path><path class="lnwm" d="M156 66l4 6 4-6"></path>
+<rect class="box" height="40" rx="6" stroke="var(--warm)" width="80" x="120" y="76"></rect><text class="wm" text-anchor="middle" x="160" y="93">comprueba los totales</text><text class="lbl" text-anchor="middle" x="160" y="108">solo</text>
+<text class="lbl" text-anchor="middle" x="110" y="180">tú pides · nadie pide</text>
+</svg>
+</div>
+<div class="fig" data-cap="&lt;b&gt;Fig. 4&lt;/b&gt; Conexões são tomadas para outros sistemas; memória guarda entre sessões; subagentes dividem tarefas grandes e devolvem ao principal." data-fig="4">
+<svg aria-hidden="true" fill="none" viewbox="0 0 220 200">
+<rect class="boxon" height="40" rx="8" width="68" x="76" y="70"></rect><text class="hi" text-anchor="middle" x="110" y="94">agente</text>
+<rect class="box" height="24" rx="4" width="52" x="14" y="20"></rect><text class="lbl" text-anchor="middle" x="40" y="36">agenda</text>
+<rect class="box" height="24" rx="4" width="52" x="84" y="14"></rect><text class="lbl" text-anchor="middle" x="110" y="30">correo electrónico</text>
+<rect class="box" height="24" rx="4" width="52" x="154" y="20"></rect><text class="lbl" text-anchor="middle" x="180" y="36">hoja de cálculo</text>
+<path class="ln" d="M40 44l46 28M110 38v32M180 44l-46 28"></path>
+<rect class="box" height="24" rx="4" width="52" x="14" y="140"></rect><text class="lbl" text-anchor="middle" x="40" y="156">sub 1</text>
+<rect class="box" height="24" rx="4" width="52" x="154" y="140"></rect><text class="lbl" text-anchor="middle" x="180" y="156">sub 2</text>
+<path class="lnon" d="M90 110l-40 30M130 110l40 30"></path>
+<rect class="box" height="24" rx="4" stroke="var(--warm)" width="52" x="84" y="140"></rect><text class="wm" text-anchor="middle" x="110" y="156">memoria</text>
+<text class="lbl" text-anchor="middle" x="110" y="188">tomas arriba · equipo abajo</text>
+</svg>
+</div>
+<div class="fig" data-cap="&lt;b&gt;Fig. 5&lt;/b&gt; O ciclo da aula 2 com o harness em volta: cada etapa passa por uma peça. É o mesmo modelo, com o seu contorno." data-fig="5">
+<svg aria-hidden="true" fill="none" viewbox="0 0 220 200">
+<rect class="box" height="180" rx="14" stroke-dasharray="5 4" width="200" x="10" y="10"></rect>
+<circle class="ln" cx="110" cy="100" r="54"></circle>
+<circle class="boxon" cx="110" cy="46" r="9"></circle><text class="lbl" text-anchor="middle" x="110" y="30">pedido · manual</text>
+<circle class="boxon" cx="157" cy="73" r="9"></circle><text class="lbl" text-anchor="middle" x="182" y="66">plan · credencial</text>
+<circle class="boxon" cx="157" cy="127" r="9"></circle><text class="lbl" text-anchor="middle" x="182" y="146">haz · receta</text>
+<circle class="boxon" cx="110" cy="154" r="9"></circle><text class="lbl" text-anchor="middle" x="110" y="178">comprueba · activador</text>
+<circle class="boxon" cx="63" cy="127" r="9"></circle><text class="lbl" text-anchor="middle" x="38" y="146">entrega</text>
+<circle class="boxon" cx="63" cy="73" r="9"></circle><text class="wm" text-anchor="middle" x="38" y="66">recuerda</text>
+<text class="hi" text-anchor="middle" x="110" y="104">harness</text>
+</svg>
+</div>
+</div>
+<p class="railcap"></p>
+<div class="steps-ind"></div>
+<p class="sidenote">Resalta cualquier fragmento para convertirlo en una tarjeta de repaso.</p>
+</div></aside>
+</div>
+<div class="fecho-wrap">
+<div class="recap-autor">
+<p class="rak">Resumen</p>
+<ul>
+<li>El harness tiene siete piezas: instrucciones fijas, herramientas, permisos, skills, hooks, conexiones y memoria con subagentes. Ninguna requiere programar.</li>
+<li>Las instrucciones fijas son una hoja que el agente lee en cada sesión. Resuelven la repetición que te cansaba en el chat.</li>
+<li>Las herramientas indican lo que puede hacer; los permisos, lo que tiene autorización para hacer. Las skills guardan recetas; los hooks se activan solos; las conexiones vinculan calendario, correo electrónico y hoja de cálculo.</li>
+<li>El modelo de IA es el mismo para todos. Lo que hace que el agente sea tuyo es el marco que escribes a su alrededor.</li>
+</ul>
+</div>
+<div class="next-action">
+<p class="nak">Tu siguiente paso</p>
+<p class="na-win">Acabas de escribir la pieza central del harness, con reglas que solo tú conoces.</p>
+<p class="na-action">En los próximos 15 minutos: vuelve a leer tu hoja y agrega una línea en «Solo con mi aprobación» para la acción que más te preocupa. Es el permiso que querrás tener el primer día.</p>
+<p class="na-hook">En la última clase crearás la regla para decidir: mirar cualquier tarea de la semana y saber en segundos si va al chat, al editor o al terminal.</p>
+</div>
+</div>
+<nav class="lnav"><a href="#aula-3">← lección 3</a><a href="#aula-5">lección 5 →</a></nav>
+<footer>Clase 4 · INEMA.CLUB PRO</footer>
+<script id="cards-4" type="application/json">
+[
+  {"front":"Denise percebeu que o agente insistia num tom formal que ela não usa. Em qual peça do harness ela corrige isso, e o que acontece nas sessões seguintes?","back":"Nas instruções fixas: acrescenta a regra de tom na folha. Toda sessão seguinte começa com a regra lida, sem ela repetir."},
+  {"front":"O agente de Camila tem a ferramenta de apagar arquivos, mas a folha diz 'nunca apagar na pasta de radiografias'. Ele consegue apagar? Ele está autorizado?","back":"Consegue (a ferramenta existe), mas não está autorizado (a permissão proíbe). Ferramenta é capacidade; permissão é autorização. As duas se completam."},
+  {"front":"'Faz o fechamento do mês' e 'sempre que um fechamento terminar, me mande a lista de pendências'. Qual é skill e qual é hook?","back":"A primeira é skill: receita chamada pelo nome. A segunda é hook: dispara sozinha quando o evento acontece."},
+  {"front":"Helena quer que o agente veja a agenda da fábrica sem ela exportar nada à mão. Que peça do harness resolve, e qual é a imagem usada na aula para ela?","back":"Conexões (MCP): uma tomada ligando o agente ao sistema de agenda. Ligada a tomada, ele enxerga a agenda como enxerga a pasta."},
+  {"front":"Rafael pergunta: 'meu concorrente usa exatamente a mesma IA que eu; onde fica a minha vantagem?' O que você responde?","back":"No harness. As instruções fixas, as permissões e as receitas do escritório dele são o que só ele tem. O modelo é commodity; o contorno é dele."},
+  {"front":"Por que a aula recomenda começar só com instruções fixas e permissões, e não com as sete peças?","back":"Porque essas duas já mudam o comportamento do agente em toda sessão e cabem numa folha. As outras entram quando uma tarefa concreta pedir, evitando montar estrutura sem uso."}
+]
+</script>
+<!-- COMPLETUDE aula-4 | tipo=FUNDAMENTO | steps=5
+  [OK] promise            .promise no cold-open (1)
+  [OK] why                .why após a promessa (1)
+  [OK] tempo              data-tempo no view + render no cold-open (1)
+  [OK] exemplo-profissao  exemplo aplicado em 100% dos steps (5/5: Denise, Camila, Helena+Rafael, Helena, Camila)
+  [OK] apoio-visual       figura conceitual legendada em 100% dos steps (5/5, data-fig 1..5)
+  [OK] practice           .practice[data-mode="prompt"] (exatamente 1)
+  [OK] psafe              .psafe dentro da prática (1)
+  [OK] pgoal-tempo        .pgoal com tempo declarado (~12 min) (1)
+  [OK] recap-autor        .recap-autor no fecho (1)
+  [OK] next-action        .next-action no fecho (1)
+  [OK] cards              <script id="cards-4"> presente (6 cartões: aplicação, contraste, contraste, aplicação, aplicação, pergunta)
+  [OK] anti-duplicacao    §11.3 — 3 testes passam (substring / forma / operação)
+  [OK] teste-se-FUND      tipo=FUNDAMENTO: presente (1 quiz data-fb)
+  Dosagem: quiz + cards + qbefore-after (step 1) + qanchor (step 5) = 4 obrigatórios, 0 opcional. Densidade: quadros nos steps 1 e 5; steps 2, 3 (quiz) e 4 só prosa.
+-->
+</section>
+<!-- =====================================================================
+     AULA 5 — PRÁTICA / INTEGRAÇÃO
+     ===================================================================== -->
+<section class="view" data-aula="5" data-tempo="15min" id="v-aula-5">
+<header class="hero"><div class="hero-inner">
+<div>
+<p class="kicker">Clase 5 · Práctica</p>
+<h1>Qué capa<br/><em>para qué tarea</em></h1>
+<p class="promise">Al final de esta clase podrás revisar cinco tareas de tu semana y decir, en segundos y con un motivo, cuál va al chat, cuál al editor, cuál a la terminal y cuál merece entrar en el harness.</p>
+<p class="why">Sin una regla para decidir, la tendencia es usar el chat para todo, porque es lo que está abierto. Así, las tareas grandes siguen siendo manuales y la IA se convierte solo en un redactor más rápido. La regla de esta clase cabe en cuatro líneas y te devuelve las horas que se pierden en tareas con varios archivos.</p>
+<p class="cue"><span class="arw">↓</span> rol para estudiar</p>
+</div>
+<div class="herofig"><svg aria-hidden="true" fill="none" viewbox="0 0 300 240">
+<!-- metáfora: placas de sinalização num cruzamento -->
+<rect class="fl" height="170" rx="2" width="8" x="146" y="40"></rect>
+<rect class="st" height="26" rx="4" width="90" x="60" y="56"></rect><text class="lbl" text-anchor="middle" x="105" y="73">un texto → chat</text>
+<rect class="st" height="26" rx="4" width="110" x="150" y="96"></rect><text class="lbl" text-anchor="middle" x="205" y="113">archivo abierto → editor</text>
+<rect class="sta" height="26" rx="4" width="110" x="40" y="136"></rect><text class="hi" text-anchor="middle" x="95" y="153">varios archivos → terminal</text>
+<rect class="stw" height="26" rx="4" width="120" x="150" y="176"></rect><text class="wm" text-anchor="middle" x="210" y="193">se repite → harness</text>
+<text class="lbl" text-anchor="middle" x="150" y="228">la señal correcta en el cruce</text>
+</svg></div>
+</div></header>
+<div class="layout">
+<div class="col">
+<section class="step" data-fig="1" data-kind="fundamento">
+<h2><span class="n">01</span> La regla de decisión cabe en cuatro líneas</h2>
+<p>Todo el curso se resume en una pregunta por tarea: ¿cuántos archivos abarca y se repite? La respuesta señala la capa. La regla de abajo es la que Helena pegó en la pared de su sala, y sirve igual para el consultorio de Camila o la oficina de Rafael.</p>
+<div class="qsteps">
+<p class="qsk">La regla de decisión</p>
+<ol>
+<li><b>Un texto, una respuesta</b> (pensar, redactar, resumir, traducir): chat web.</li>
+<li><b>Un archivo de código abierto en pantalla</b>, y tú programas: editor.</li>
+<li><b>Varios archivos, o verificar, o publicar</b>: terminal con agente.</li>
+<li><b>Se repetirá cada semana</b>: hazlo en la terminal y escribe la regla o la receta en el harness, una sola vez.</li>
+</ol>
+</div>
+<div class="mobfig" data-mobfig="1"></div>
+<button class="readbtn" data-read="s1">marcar como leído</button>
+</section>
+<section class="step" data-fig="2" data-kind="fundamento">
+<h2><span class="n">02</span> Una semana completa vivida bajo la regla</h2>
+<p>Denise, consultora de marketing, aplicó la regla un lunes. En su lista quedaron: responder la propuesta de un nuevo cliente (un texto: chat). Preparar el informe mensual de tres clientes con las hojas de cálculo de cada carpeta (varios archivos y tarea repetida: terminal, con la receta en el harness). Revisar los subtítulos de la semana de un cliente (un texto a la vez: chat). Verificar que todos los informes enviados durante el trimestre coincidan con las facturas (varios archivos y verificación: terminal).</p>
+<p>Resultado de la semana: dos tareas se quedaron en el chat, donde ya estaban bien. Dos pasaron al terminal, y eran precisamente las que consumían la tarde del viernes. Nada pasó al editor, porque Denise no programa. La regla no le quita el chat a nadie: devuelve al terminal lo que nunca debió copiarse y pegarse.</p>
+<div class="mobfig" data-mobfig="2"></div>
+<button class="readbtn" data-read="s2">marcar como leído</button>
+</section>
+<section class="step" data-fig="3" data-kind="fundamento">
+<h2><span class="n">03</span> Qué cambia en tu mes</h2>
+<p>Cuando la regla se vuelve un hábito, el patrón es siempre el mismo: el chat sigue en el día a día, el terminal absorbe las tareas pesadas y el harness crece una línea por semana con lo que descubres que quieres mantener siempre igual. En un mes, la hoja de instrucciones fijas ya refleja tu operación.</p>
+<div class="qapply">
+<p class="qak">En tu profesión</p>
+<ul>
+<li><b>Helena, directora de operaciones:</b> el informe semanal de producción sale de doce hojas de cálculo sin que ella abra ninguna; la falta de datos de un turno queda marcada, nunca inventada.</li>
+<li><b>Rafael, arquitecto:</b> la tabla comparativa de las propuestas de la carpeta queda lista antes de la reunión, y un activador verifica el rango de precios de la oficina.</li>
+<li><b>Camila, dentista:</b> la carpeta de radiografías organizada por paciente, con la regla "nunca borrar, nunca enviar un mensaje sin aprobación" escrita una sola vez.</li>
+<li><b>Denise, consultora:</b> tres informes mensuales con el modelo correcto, en el tono correcto, y con la tarde del viernes de vuelta.</li>
+</ul>
+</div>
+<div class="mobfig" data-mobfig="3"></div>
+<button class="readbtn" data-read="s3">marcar como leído</button>
+</section>
+<section class="practice" data-mode="tarefa" data-practice="p5">
+<p class="pk">Practica ahora <span class="pcount">0/4 completados</span></p>
+<h3 class="ph">Clasifica cinco tareas de tu semana</h3>
+<p class="pgoal">En unos 10 minutos, haz una lista de cinco tareas reales de la próxima semana, pasa cada una por la regla de cuatro líneas y marca al menos una como candidata para la terminal. Te llevarás tu primer plan de capas.</p>
+<p class="psafe">Es una lista en papel o en el celular. No se abre ni configura nada. Si ninguna tarea termina en el terminal, vuelve a leer la línea 3 de la regla: casi todas las semanas hay al menos una tarea con varios archivos escondida en una «tarde de organización».</p>
+<ol class="psteps">
+<li><label><input data-ptask="1" type="checkbox"/> <span>Escribe cinco tareas de la próxima semana, una por línea, con un verbo: "armar", "responder", "revisar", "organizar".</span></label></li>
+<li><label><input data-ptask="2" type="checkbox"/> <span>Para cada línea, responde las dos preguntas: ¿cuántos archivos? ¿se repite? Anótalo al lado, brevemente.</span></label></li>
+<li><label><input data-ptask="3" type="checkbox"/> <span>Escribe la capa de cada una: chat, editor, terminal o terminal + harness.</span></label></li>
+<li><label><input data-ptask="4" type="checkbox"/> <span>Rodea la tarea de terminal que más tiempo te cuesta hoy. Listo cuando esté rodeada y tu pedido, escrito en la clase 3, esté al lado.</span></label></li>
+</ol>
+<p class="pdone">Acabas de decidir, con criterio, dónde debe invertirse cada hora de tu semana. La tarea marcada es tu primer trabajo para la terminal.</p>
+</section>
+</div>
+<aside class="rail"><div class="railsticky">
+<div class="figstage">
+<div class="fig on" data-cap="&lt;b&gt;Fig. 1&lt;/b&gt; Duas perguntas decidem a camada: quantos arquivos, e se repete. O terminal recebe tudo que tem vários arquivos ou precisa conferir." data-fig="1">
+<svg aria-hidden="true" fill="none" viewbox="0 0 220 200">
+<rect class="boxon" height="26" rx="6" width="100" x="60" y="12"></rect><text class="hi" text-anchor="middle" x="110" y="29">tarea</text>
+<path class="lnon" d="M110 38v18"></path>
+<rect class="box" height="24" rx="6" width="140" x="40" y="56"></rect><text text-anchor="middle" x="110" y="72">¿cuántos archivos?</text>
+<path class="ln" d="M70 80l-30 30M150 80l30 30"></path>
+<rect class="box" height="22" rx="4" width="66" x="10" y="110"></rect><text class="lbl" text-anchor="middle" x="43" y="125">uno → chat</text>
+<rect class="boxon" height="22" rx="4" width="66" x="144" y="110"></rect><text class="hi" text-anchor="middle" x="177" y="125">varios →</text>
+<path class="lnon" d="M177 132v14"></path>
+<rect class="boxon" height="22" rx="4" width="80" x="130" y="146"></rect><text class="hi" text-anchor="middle" x="170" y="161">terminal</text>
+<path class="lnwm" d="M170 168v10"></path><text class="wm" text-anchor="middle" x="170" y="190">¿se repite? → harness</text>
+<text class="lbl" text-anchor="middle" x="43" y="160">(código abierto:</text><text class="lbl" text-anchor="middle" x="43" y="172">editor)</text>
+</svg>
+</div>
+<div class="fig" data-cap="&lt;b&gt;Fig. 2&lt;/b&gt; A semana de Denise passada pela regra: duas tarefas ficam no chat, duas vão para o terminal. As do terminal eram as que custavam a tarde." data-fig="2">
+<svg aria-hidden="true" fill="none" viewbox="0 0 220 200">
+<text class="lbl" x="20" y="22">tarea</text><text class="lbl" x="160" y="22">capa</text>
+<rect class="box" height="22" rx="4" width="120" x="14" y="30"></rect><text text-anchor="middle" x="74" y="45">propuesta (1 texto)</text><text text-anchor="middle" x="180" y="45">chat</text>
+<rect class="boxon" height="22" rx="4" width="120" x="14" y="60"></rect><text class="hi" text-anchor="middle" x="74" y="75">informe ×3 (carpetas)</text><text class="hi" text-anchor="middle" x="180" y="75">terminal</text>
+<rect class="box" height="22" rx="4" width="120" x="14" y="90"></rect><text text-anchor="middle" x="74" y="105">subtítulos (1 texto)</text><text text-anchor="middle" x="180" y="105">chat</text>
+<rect class="boxon" height="22" rx="4" width="120" x="14" y="120"></rect><text class="hi" text-anchor="middle" x="74" y="135">comprobar facturas</text><text class="hi" text-anchor="middle" x="180" y="135">terminal</text>
+<rect class="box" height="10" rx="3" width="192" x="14" y="160"></rect><rect class="wm" height="10" rx="3" width="130" x="14" y="160"></rect>
+<text class="lbl" text-anchor="middle" x="110" y="188">tiempo de la semana: las 2 del terminal eran el 70%</text>
+</svg>
+</div>
+<div class="fig" data-cap="&lt;b&gt;Fig. 3&lt;/b&gt; Com o hábito, o chat fica no dia a dia, o terminal absorve o pesado e o harness cresce uma linha por semana." data-fig="3">
+<svg aria-hidden="true" fill="none" viewbox="0 0 220 200">
+<text class="lbl" x="14" y="24">sem 1</text><text class="lbl" x="62" y="24">sem 2</text><text class="lbl" x="110" y="24">sem 3</text><text class="lbl" x="158" y="24">sem 4</text>
+<rect class="box" height="30" rx="4" width="40" x="14" y="34"></rect><rect class="box" height="30" rx="4" width="40" x="62" y="34"></rect><rect class="box" height="30" rx="4" width="40" x="110" y="34"></rect><rect class="box" height="30" rx="4" width="40" x="158" y="34"></rect>
+<text class="lbl" text-anchor="middle" x="106" y="54">chat: igual</text>
+<rect class="boxon" height="30" rx="4" width="40" x="14" y="74"></rect><rect class="boxon" height="40" rx="4" width="40" x="62" y="74"></rect><rect class="boxon" height="50" rx="4" width="40" x="110" y="74"></rect><rect class="boxon" height="60" rx="4" width="40" x="158" y="74"></rect>
+<text class="hi" text-anchor="middle" x="34" y="150">el terminal crece</text>
+<path class="lnwm" d="M14 172h40M62 172h40M62 178h40M110 172h40M110 178h40M110 184h40M158 172h40M158 178h40M158 184h40M158 190h40"></path>
+<text class="wm" text-anchor="middle" x="170" y="164">harness: +1 línea</text>
+</svg>
+</div>
+</div>
+<p class="railcap"></p>
+<div class="steps-ind"></div>
+<p class="sidenote">Resalta cualquier fragmento para convertirlo en una tarjeta de repaso.</p>
+</div></aside>
+</div>
+<div class="fecho-wrap">
+<div class="recap-autor">
+<p class="rak">Resumen</p>
+<ul>
+<li>Dos preguntas por tarea: cuántos archivos y si se repite. Un texto se queda en el chat; varios archivos o una revisión van a la terminal; lo que se repite entra en el harness.</li>
+<li>El editor solo sirve a quienes programan y tienen un archivo abierto en pantalla.</li>
+<li>La ventaja no está en abandonar el chat. Está en quitarle las tareas que involucran varios archivos, que son las que te ocupan toda la tarde.</li>
+<li>Con el hábito, el harness crece una línea por semana y empieza a reflejar cómo funciona tu operación.</li>
+</ul>
+</div>
+<div class="next-action">
+<p class="nak">Tu siguiente paso</p>
+<p class="na-win">Acabas de clasificar tu semana por capa, con una tarea elegida para la terminal y su solicitud redactada.</p>
+<p class="na-action">En los próximos 15 minutos: envía la tarea marcada con un círculo, la solicitud en portugués y la hoja de instrucciones fijas a quien se sentará contigo frente al terminal, ya sea alguien de tu equipo o tú mismo en una tarde tranquila.</p>
+<p class="na-hook">En la última clase verás dónde está todo esto en la computadora: una carpeta por proyecto, el cajón oculto de reglas, el estándar abierto AGENTS.md y la base de conocimientos que las personas y los agentes leen juntos.</p>
+</div>
+</div>
+<nav class="lnav"><a href="#aula-4">← clase 4</a><a href="#aula-6">lección 6 →</a></nav>
+<footer>Clase 5 · INEMA.CLUB PRO</footer>
+<script id="cards-5" type="application/json">
+[
+  {"front":"Rafael tem: (a) escrever a resposta a uma reclamação de cliente; (b) renomear e organizar 300 fotos de obra por projeto. Onde vai cada uma, e por quê?","back":"(a) chat: um texto, uma resposta. (b) terminal: vários arquivos e uma organização que o agente executa e confere. Se as fotos chegam toda semana, a regra de nomes vai para o harness."},
+  {"front":"Uma tarefa passou pela regra e caiu em 'terminal'. Que segunda pergunta decide se ela também entra no harness?","back":"Se repete. Repetindo toda semana ou todo mês, a regra ou a receita é escrita uma vez no harness e o agente segue nas próximas."},
+  {"front":"Camila classificou 'responder às dúvidas de pacientes por mensagem' como terminal, porque são muitas mensagens. O que está errado no raciocínio?","back":"Muitas mensagens não são muitos arquivos, e cada resposta é um texto com julgamento dela. Além disso, a permissão dela proíbe mensagem a paciente sem aprovação. Fica no chat, uma a uma, ou fora da IA."}
+]
+</script>
+<!-- COMPLETUDE aula-5 | tipo=PRATICA | steps=3
+  [OK] promise            .promise no cold-open (1)
+  [OK] why                .why após a promessa (1)
+  [OK] tempo              data-tempo no view + render no cold-open (1)
+  [OK] exemplo-profissao  exemplo aplicado em 100% dos steps (3/3: Helena+Camila+Rafael, Denise, as quatro no qapply)
+  [OK] apoio-visual       figura conceitual legendada em 100% dos steps (3/3, data-fig 1..3)
+  [OK] practice           .practice[data-mode="tarefa"] (exatamente 1)
+  [OK] psafe              .psafe dentro da prática (1)
+  [OK] pgoal-tempo        .pgoal com tempo declarado (~10 min) (1)
+  [OK] recap-autor        .recap-autor no fecho (1)
+  [OK] next-action        .next-action no fecho (1)
+  [OK] cards              <script id="cards-5"> presente (3 cartões de aplicação integradores: decisão, pergunta, diagnóstico)
+  [OK] anti-duplicacao    §11.3 — 3 testes passam (substring / forma / operação)
+  [N/A] teste-se-FUND     aula é PRATICA (obrigação não se aplica); sem teste-se opcional
+  Dosagem: qsteps (step 1) + mini-caso em prosa (step 2) = 2 obrigatórios; qapply (step 3, 4 profissões) + cards = 2 opcionais = 4 ≤ 5. Densidade: quadros nos steps 1 e 3, step 2 só prosa.
+-->
+</section>
+<!-- =====================================================================
+     AULA 6 — FUNDAMENTO
+     ===================================================================== -->
+<section class="view" data-aula="6" data-tempo="22min" id="v-aula-6">
+<header class="hero"><div class="hero-inner">
+<div>
+<p class="kicker">Clase 6 · Fundamento</p>
+<h1>La carpeta es la oficina<br/><em>del agente</em></h1>
+<p class="promise">Al final de esta clase podrás dibujar la estructura de carpetas de un proyecto tuyo (una carpeta por proyecto, el cajón oculto de reglas, la hoja de instrucciones, las recetas y la base de conocimiento) y explicar para qué sirve cada una.</p>
+<p class="why">En las clases anteriores, el harness apareció como «una hoja que el agente lee». Pero las hojas están en algún lugar. Quien no sabe dónde, deja al agente suelto en toda la carpeta Documentos, pierde las reglas entre proyectos y acumula conocimientos en conversaciones que desaparecen. La respuesta es organizar las carpetas, y cabe en un dibujo.</p>
+<p class="cue"><span class="arw">↓</span> rol para estudiar</p>
+</div>
+<div class="herofig"><svg aria-hidden="true" fill="none" viewbox="0 0 300 240">
+<!-- metáfora: uma sala de escritório por projeto, com a gaveta de procedimentos e o armário de arquivo -->
+<rect class="fl" height="150" rx="6" width="240" x="30" y="50"></rect>
+<text class="lbl" text-anchor="middle" x="150" y="42">sala "projeto1"</text>
+<rect class="st" height="60" rx="4" width="70" x="50" y="120"></rect><path class="st" d="M50 140h70M50 160h70"></path><text class="lbl" text-anchor="middle" x="85" y="195">cajón oculto</text>
+<rect class="sta" height="100" rx="4" width="110" x="140" y="80"></rect><path class="sta" d="M155 100h80M155 118h80M155 136h60M155 154h70"></path><text class="hi" text-anchor="middle" x="195" y="195">armario de conocimiento</text>
+<rect class="stw" height="34" rx="3" width="50" x="60" y="70"></rect><text class="wm" text-anchor="middle" x="85" y="91">reglas</text>
+<text class="hi" text-anchor="middle" x="150" y="225">el agente entra en la sala y ya sabe dónde está todo</text>
+</svg></div>
+</div></header>
+<div class="layout">
+<div class="col">
+<section class="step" data-fig="1" data-kind="fundamento">
+<h2><span class="n">01</span> Una carpeta por proyecto define hasta dónde alcanza a ver el agente</h2>
+<p>Recuerda la clase 3: el agente solo ve la carpeta desde la que se abrió y las que están dentro. Esto se convierte en una regla de organización: <b>una carpeta por proyecto</b>, todas dentro de una carpeta principal llamada, por ejemplo, "projetos". Así, "projetos/projeto1" es la oficina del proyecto 1. El agente abierto allí ve todo el proyecto 1 y nada más. No recorre la computadora, no mezcla clientes ni tarda.</p>
+<p>Rafael tenía todo en una carpeta "Escritorio" con decenas de obras mezcladas. Cuando pedía "arma la tabla de las propuestas", el agente leía propuestas de tres obras diferentes. Pasó todo a "proyectos/obra-vila-nova", "proyectos/obra-centro" y el problema desapareció. Cada carpeta se convirtió en una oficina con paredes.</p>
+<div class="qbefore-after">
+<div class="qba-col qba-before"><p class="qba-lbl">una carpeta para todo</p><p class="qba-txt">El agente lee 40 obras para responder sobre una. Las reglas de un cliente se filtran a otro. Tarda y se equivoca.</p></div>
+<div class="qba-col qba-depois"><p class="qba-lbl">projetos/projeto1</p><p class="qba-txt">El agente abre la carpeta de la obra correcta, lee solo lo que importa y las reglas de esa obra están ahí mismo.</p></div>
+<p class="qba-saldo"><b>Balance:</b> alcance definido por la carpeta. Cambiar de proyecto es cambiar de carpeta.</p>
+</div>
+<div class="mobfig" data-mobfig="1"></div>
+<button class="readbtn" data-read="s1">marcar como leído</button>
+</section>
+<section class="step" data-fig="2" data-kind="ferramenta" data-versao="Claude Code, set/2026">
+<h2><span class="n">02</span> El cajón oculto: la carpeta ".claude" guarda las reglas del proyecto</h2>
+<p>Dentro de cada proyecto hay una carpeta cuyo nombre empieza con un punto: ".claude". El punto al inicio es una convención: esas carpetas quedan ocultas en la lista normal, como el cajón de procedimientos que permanece cerrado, pero todos saben dónde está. Allí vive el harness del proyecto: la hoja de instrucciones fijas (el archivo CLAUDE.md, que escribiste en la clase 4), el archivo de permisos, la carpeta "skills" con las recetas y la carpeta "agents" con los subagentes.</p>
+<p>Camila tiene, dentro de "projetos/clinica", el cajón ".claude" con la hoja de reglas ("nunca enviar mensajes a pacientes sin aprobación") y una receta llamada "fechamento-do-mes". Cuando abre el agente en la carpeta de la clínica, este lee el cajón antes que nada. En la carpeta del consultorio nuevo, otro cajón, otras reglas.</p>
+<p>Lo que sigue es la pantalla real de un listado que muestra el cajón. Léelo como un mapa de carpetas, nada más.</p>
+<div class="mobfig">
+<div class="termdemo">
+<button class="termdemo-reveal" type="button">ver lo que sucede →</button>
+<div class="termdemo-body" hidden="">
+<div class="termdemo-cmd on" data-variant="ok">
+<p class="termdemo-k">el cajón oculto aparece con -a</p>
+<pre class="termdemo-in">$ cd projetos/clinica
+$ ls -a .claude</pre>
+<pre class="termdemo-out">CLAUDE.md    settings.json    skills/    agents/
+$ ls .claude/skills
+fechamento-do-mes/    confirmar-agenda/</pre>
+</div>
+</div>
+</div>
+</div>
+<button class="readbtn" data-read="s2">marcar como leído</button>
+</section>
+<section class="step" data-fig="3" data-kind="ferramenta" data-versao="AGENTS.md (agents.md) · ferramenta skills da Vercel, set/2026">
+<h2><span class="n">03</span> El estándar abierto: AGENTS.md y la carpeta ".agents" sirven para cualquier agente</h2>
+<p>El cajón ".claude" es de Claude Code. Otros agentes (Codex, Cursor, Gemini) tienen los suyos. Para no escribir la misma hoja cinco veces, el mercado acordó un estándar abierto: un archivo llamado <span class="gterm" data-def="Arquivo de texto na raiz do projeto, em formato aberto, com as instruções que qualquer agente de IA deve ler. Mantido pela comunidade em agents.md; a OpenAI o usa em dezenas de projetos." tabindex="0">AGENTS.md</span> en la raíz del proyecto, y una carpeta ".agents/skills" para las recetas. Claude Code lee ambas. Codex también. Una hoja, varios empleados.</p>
+<p>Vercel publicó una herramienta que copia recetas listas en la carpeta correcta de cada agente y mantiene un catálogo abierto de recetas. Eso es lo que hace que una skill sea portátil: una carpeta pequeña con un SKILL.md dentro, que cualquier agente entiende. Helena aprobó la estandarización en la fábrica por un motivo sencillo: si el equipo cambia de agente, las reglas y las recetas siguen vigentes.</p>
+<p>Regla práctica: escribe las reglas generales en AGENTS.md; deja en ".claude" solo lo específico de ese agente. En proyectos grandes, cada subcarpeta puede tener su propio AGENTS.md, y el agente usa el más cercano.</p>
+<div class="quiz" data-answer="b">
+<p class="qk">Ponte a prueba</p><p class="q">Denise usa Claude Code hoy, pero el nuevo cliente trabaja con Codex. ¿Dónde escribe las reglas de tono de la agencia para no mantener dos copias?</p>
+<button class="opt" data-k="a">Dentro de ".claude", porque ahí es donde la lee su agente.</button>
+<button class="opt" data-fb="Isso. AGENTS.md é o padrão aberto que os dois agentes leem. Em '.claude' fica só o que é específico do Claude Code." data-k="b">En el AGENTS.md en la raíz del proyecto, que leen ambos agentes.</button>
+<button class="opt" data-k="c">En una conversación del chat web, pegándolo cada vez.</button>
+<p class="qfb"></p>
+</div>
+<div class="mobfig" data-mobfig="3"></div>
+<button class="readbtn" data-read="s3">marcar como leído</button>
+</section>
+<section class="step" data-fig="4" data-kind="fundamento">
+<h2><span class="n">04</span> La base de conocimiento: el estándar «wiki» de Karpathy</h2>
+<p>Las reglas dicen cómo trabajar. Falta lo que sabe el proyecto: reuniones, decisiones, datos, referencias. Andrej Karpathy, uno de los nombres más conocidos del área, propuso un patrón simple que se convirtió en referencia: dos carpetas. En "raw" pones todo lo que llega (actas, PDFs, correos, recortes), sin modificarlo. En "wiki", el agente escribe, a partir de raw, páginas de texto simple enlazadas entre sí, una por tema, y las mantiene actualizadas. Es un <span class="gterm" data-def="Padrão de base de conhecimento em que o agente compila fontes brutas (pasta raw) em páginas de texto interligadas (pasta wiki), com três operações: ingerir fonte nova, responder pergunta, e revisar a saúde das páginas." tabindex="0">LLM wiki</span>.</p>
+<p>Tres operaciones, siempre las mismas: <b>ingerir</b> (llega una nueva acta, el agente actualiza las páginas afectadas), <b>preguntar</b> (tú preguntas, responde citando las páginas) y <b>revisar</b> (revisa contradicciones y páginas huérfanas). Helena armó la wiki de la fábrica en dos semanas: cada acta de producción va a raw, y la página "paradas de máquina" está siempre actualizada, con la fecha y la fuente de cada línea.</p>
+<p>La diferencia con el chat es la de siempre: la conversación desaparece; la wiki queda en una carpeta, es texto que puedes abrir y corregir, y el agente de la próxima sesión encuentra todo allí.</p>
+<div class="mobfig" data-mobfig="4"></div>
+<button class="readbtn" data-read="s4">marcar como leído</button>
+</section>
+<section class="step" data-fig="5" data-kind="ferramenta" data-versao="OKF v0.2, Google Cloud, set/2026">
+<h2><span class="n">05</span> El formato abierto: OKF, de Google Cloud, para que personas y agentes lean la misma carpeta</h2>
+<p>La wiki resuelve un proyecto. Cuando el conocimiento necesita circular entre áreas, empresas y agentes diferentes, ayuda tener un formato acordado. Google Cloud publicó uno: el <span class="gterm" data-def="Open Knowledge Format. Formato aberto do Google Cloud: uma pasta de arquivos de texto simples, cada um com um cabeçalho (título, tipo, descrição, quem escreveu, quem verificou), mais um índice por pasta e um histórico de mudanças. Sem ferramenta obrigatória." tabindex="0">OKF</span>, Open Knowledge Format. Es mínimo a propósito: una carpeta de archivos de texto, cada uno con un encabezado breve al principio que indica el título, el tipo, la descripción y el autor; un archivo "index.md" en cada carpeta que enumera lo que hay allí; y un "log.md" con el historial de cambios.</p>
+<p>Dos detalles importan para quien toma decisiones. Primero, el encabezado registra <b>quién</b> escribió cada página: una persona («human:helena») o un agente («agente/versión»). Así puedes confiar de forma distinta en lo que confirmó una persona. Segundo, el índice permite que el agente vea lo que existe antes de abrirlo todo, lo que ahorra tiempo y evita que lea lo que no necesita. Rafael usa el encabezado para marcar «verificado por: human:rafael» en las páginas de costos que revisó.</p>
+<p>No hace falta adoptar el OKF el primer día. La idea que queda es la misma de las clases anteriores: conocimientos en una carpeta, en texto simple, con responsable y fecha, que las personas y los agentes leen y actualizan.</p>
+<div class="qanchor"><p>Reglas en el cajón, conocimiento en el armario, una sala por proyecto. El agente entra y ya sabe dónde está.</p></div>
+<div class="mobfig" data-mobfig="5"></div>
+<button class="readbtn" data-read="s5">marcar como leído</button>
+</section>
+<section class="practice" data-mode="prompt" data-practice="p6">
+<p class="pk">Practica ahora <span class="pcount">0/4 completados</span></p>
+<h3 class="ph">Dibuja la estructura de carpetas de tu primer proyecto</h3>
+<p class="pgoal">En unos 12 minutos, usa tu chatbot de siempre para dibujar el árbol de carpetas del proyecto que marcaste en la clase 5: carpeta del proyecto, cajón de reglas, base de conocimiento. Te llevarás el dibujo listo para crear las carpetas cuando te sientes frente a la terminal.</p>
+<p class="psafe">Es un esquema en texto. No se crea ninguna carpeta, nada cambia en la computadora. Si la respuesta incluye carpetas que no entiendes, pide «explica cada carpeta en una frase, como si fuera a organizar un armario».</p>
+<div class="pcodewrap"><button class="pcopy" type="button">copiar</button><pre class="pcode">Quero organizar as pastas de um projeto em que um agente de IA vai trabalhar comigo.
+Projeto: &lt;nome e o que é, ex.: relatório mensal de produção da fábrica&gt;.
+Arquivos que ele vai usar: &lt;ex.: 12 planilhas de turno por semana, atas de reunião em PDF&gt;.
+Regras que ele deve ler sempre: &lt;cole a folha de instruções fixas da aula 4, ou resuma&gt;.
+
+Desenhe a árvore de pastas em texto, começando em projetos/&lt;nome-do-projeto&gt;/, com:
+1) a pasta oculta .claude (com CLAUDE.md, settings.json, skills/ e agents/) e um AGENTS.md na raiz com as regras gerais;
+2) uma base de conhecimento no padrão wiki (pastas raw/ e wiki/) com 3 páginas iniciais sugeridas;
+3) um index.md na raiz listando cada pasta com uma frase.
+Explique cada pasta em uma frase, sem jargão. Diga o que eu NÃO devo colocar dentro dessa pasta.</pre></div>
+<ol class="psteps">
+<li><label><input data-ptask="1" type="checkbox"/> <span>Pega el texto de arriba en tu chatbot y cambia lo que está entre &lt; &gt; por tu proyecto real.</span></label></li>
+<li><label><input data-ptask="2" type="checkbox"/> <span>Verifica que el árbol tenga los tres bloques: el cajón oculto, el AGENTS.md en la raíz y las carpetas raw y wiki. Si falta uno, pide "agrega el bloque X".</span></label></li>
+<li><label><input data-ptask="3" type="checkbox"/> <span>Lee la línea «qué no poner aquí». Debe mencionar archivos de otros proyectos. Si no los menciona, corrígela a mano.</span></label></li>
+<li><label><input data-ptask="4" type="checkbox"/> <span>Guarda el dibujo junto con la hoja de reglas de la clase 4. Estará listo cuando puedas explicar en voz alta para qué sirve cada carpeta.</span></label></li>
+</ol>
+<p class="pdone">Acabas de diseñar la oficina de tu agente. Crear las carpetas es una solicitud de una línea para él, en la clase 3.</p>
+</section>
+</div>
+<aside class="rail"><div class="railsticky">
+<div class="figstage">
+<div class="fig on" data-cap="&lt;b&gt;Fig. 1&lt;/b&gt; A pasta-mãe 'projetos' e uma pasta por projeto. O alcance do agente é a pasta em que ele foi aberto; o resto não existe para ele." data-fig="1">
+<svg aria-hidden="true" fill="none" viewbox="0 0 220 200">
+<rect class="box" height="26" rx="6" width="100" x="60" y="14"></rect><text text-anchor="middle" x="110" y="31">projetos/</text>
+<path class="ln" d="M110 40v16M50 56h120M50 56v14M110 56v14M170 56v14"></path>
+<rect class="boxon" height="26" rx="6" width="68" x="16" y="70"></rect><text class="hi" text-anchor="middle" x="50" y="87">projeto1/</text>
+<rect class="box" height="26" rx="6" width="68" x="76" y="70"></rect><text text-anchor="middle" x="110" y="87">projeto2/</text>
+<rect class="box" height="26" rx="6" width="68" x="136" y="70"></rect><text text-anchor="middle" x="170" y="87">projeto3/</text>
+<rect class="boxon" height="60" rx="8" stroke-dasharray="4 3" width="80" x="10" y="104"></rect>
+<text class="lbl" text-anchor="middle" x="50" y="124">agente abierto</text><text class="lbl" text-anchor="middle" x="50" y="138">aquí solo ve</text><text class="hi" text-anchor="middle" x="50" y="152">el proyecto 1</text>
+<text class="lbl" text-anchor="middle" x="150" y="140">invisibles</text>
+<text class="lbl" text-anchor="middle" x="110" y="188">cambiar de proyecto = cambiar de carpeta</text>
+</svg>
+</div>
+<div class="fig termdemo" data-cap="&lt;b&gt;Fig. 2&lt;/b&gt; A gaveta '.claude' listada: a folha de regras, as permissões, as receitas e os subagentes. O '-a' mostra pastas ocultas." data-fig="2">
+<button class="termdemo-reveal" type="button">ver lo que sucede →</button>
+<div class="termdemo-body" hidden="">
+<div class="termdemo-cmd on" data-variant="ok">
+<p class="termdemo-k">el cajón oculto aparece con -a</p>
+<pre class="termdemo-in">$ cd projetos/clinica
+$ ls -a .claude</pre>
+<pre class="termdemo-out">CLAUDE.md    settings.json    skills/    agents/
+$ ls .claude/skills
+fechamento-do-mes/    confirmar-agenda/</pre>
+</div>
+</div>
+</div>
+<div class="fig" data-cap="&lt;b&gt;Fig. 3&lt;/b&gt; AGENTS.md e '.agents/skills' na raiz são lidos por qualquer agente; cada gaveta própria guarda só o específico daquele agente." data-fig="3">
+<svg aria-hidden="true" fill="none" viewbox="0 0 220 200">
+<rect class="boxon" height="26" rx="6" width="120" x="50" y="12"></rect><text class="hi" text-anchor="middle" x="110" y="29">AGENTS.md</text>
+<rect class="boxon" height="22" rx="6" width="120" x="50" y="44"></rect><text class="hi" text-anchor="middle" x="110" y="59">.agents/skills/</text>
+<path class="lnon" d="M110 66v18M40 84h140M40 84v14M110 84v14M180 84v14"></path>
+<rect class="box" height="24" rx="5" width="60" x="10" y="98"></rect><text text-anchor="middle" x="40" y="114">Claude</text>
+<rect class="box" height="24" rx="5" width="60" x="80" y="98"></rect><text text-anchor="middle" x="110" y="114">Codex</text>
+<rect class="box" height="24" rx="5" width="60" x="150" y="98"></rect><text text-anchor="middle" x="180" y="114">Cursor</text>
+<rect class="box" height="22" rx="5" stroke-dasharray="3 3" width="60" x="10" y="130"></rect><text class="lbl" text-anchor="middle" x="40" y="145">.claude/</text>
+<rect class="box" height="22" rx="5" stroke-dasharray="3 3" width="60" x="80" y="130"></rect><text class="lbl" text-anchor="middle" x="110" y="145">.codex/</text>
+<rect class="box" height="22" rx="5" stroke-dasharray="3 3" width="60" x="150" y="130"></rect><text class="lbl" text-anchor="middle" x="180" y="145">.cursor/</text>
+<text class="lbl" text-anchor="middle" x="110" y="178">lo común arriba · lo específico abajo</text>
+</svg>
+</div>
+<div class="fig" data-cap="&lt;b&gt;Fig. 4&lt;/b&gt; O padrão wiki: fontes brutas entram em 'raw', o agente compila páginas ligadas em 'wiki'. Ingerir, perguntar, revisar." data-fig="4">
+<svg aria-hidden="true" fill="none" viewbox="0 0 220 200">
+<rect class="box" height="120" rx="8" width="70" x="14" y="30"></rect><text class="lbl" text-anchor="middle" x="49" y="22">raw/</text>
+<rect class="box" height="14" rx="2" width="50" x="24" y="42"></rect><rect class="box" height="14" rx="2" width="50" x="24" y="62"></rect><rect class="box" height="14" rx="2" width="50" x="24" y="82"></rect><rect class="box" height="14" rx="2" width="50" x="24" y="102"></rect>
+<text class="lbl" text-anchor="middle" x="49" y="138">actas · PDFs</text>
+<path class="lnon" d="M84 90h30"></path><path class="lnon" d="M110 86l6 4-6 4"></path><text class="hi" text-anchor="middle" x="99" y="80">agente</text>
+<rect class="boxon" height="120" rx="8" width="86" x="120" y="30"></rect><text class="hi" text-anchor="middle" x="163" y="22">wiki/</text>
+<circle class="boxon" cx="145" cy="60" r="9"></circle><circle class="boxon" cx="185" cy="70" r="9"></circle><circle class="boxon" cx="150" cy="110" r="9"></circle><circle class="boxon" cx="185" cy="125" r="9"></circle>
+<path class="lnon" d="M154 62l22 6M148 69l3 32M159 112l17 11M185 79l0 37"></path>
+<text class="lbl" text-anchor="middle" x="163" y="168">páginas vinculadas, siempre actualizadas</text>
+<text class="wm" text-anchor="middle" x="110" y="192">ingerir · preguntar · revisar</text>
+</svg>
+</div>
+<div class="fig" data-cap="&lt;b&gt;Fig. 5&lt;/b&gt; Um pacote OKF: páginas de texto com cabeçalho (título, tipo, quem escreveu, quem verificou), um índice por pasta e um histórico." data-fig="5">
+<svg aria-hidden="true" fill="none" viewbox="0 0 220 200">
+<rect class="box" height="172" rx="10" stroke-dasharray="5 4" width="192" x="14" y="14"></rect>
+<rect class="boxon" height="22" rx="4" width="76" x="26" y="26"></rect><text class="hi" text-anchor="middle" x="64" y="41">index.md</text>
+<rect class="box" height="22" rx="4" width="76" x="118" y="26"></rect><text text-anchor="middle" x="156" y="41">log.md</text>
+<rect class="box" height="80" rx="6" width="168" x="26" y="60"></rect>
+<text class="wm" x="34" y="76">--- encabezado ---</text>
+<text class="lbl" x="34" y="90">title: Paradas de máquina</text>
+<text class="lbl" x="34" y="103">type: Concept</text>
+<text class="lbl" x="34" y="116">generated.by: agente/v1</text>
+<text class="hi" x="34" y="129">verified.by: human:helena</text>
+<text class="lbl" text-anchor="middle" x="110" y="160">cuerpo en texto simple</text>
+<text class="lbl" text-anchor="middle" x="110" y="178">personas y agente leen y actualizan</text>
+</svg>
+</div>
+</div>
+<p class="railcap"></p>
+<div class="steps-ind"></div>
+<p class="sidenote">Resalta cualquier fragmento para convertirlo en una tarjeta de repaso.</p>
+</div></aside>
+</div>
+<div class="fecho-wrap">
+<div class="recap-autor">
+<p class="rak">Resumen</p>
+<ul>
+<li>Una carpeta por proyecto, dentro de una carpeta principal. La carpeta define el alcance del agente, y cambiar de proyecto es cambiar de carpeta.</li>
+<li>El cajón oculto ".claude" guarda el harness de ese proyecto: la hoja de reglas, los permisos, las recetas y los subagentes.</li>
+<li>AGENTS.md en la raíz y ".agents/skills" son el estándar abierto que leen varios agentes, para no mantener copias.</li>
+<li>Los conocimientos viven en el estándar wiki (entra raw y sale la wiki compilada) y, cuando necesitan circular, en un formato abierto como el OKF, con un encabezado que indica quién escribió y quién verificó.</li>
+</ul>
+</div>
+<div class="next-action">
+<p class="nak">Tu siguiente paso</p>
+<p class="na-win">Acabas de diseñar la oficina de tu agente: sala, cajón, hoja y armario.</p>
+<p class="na-action">En los próximos 15 minutos: pon el dibujo de las carpetas, la hoja de reglas de la clase 4 y la tarea marcada con un círculo de la clase 5 en un mismo lugar. Es el paquete completo para la primera sesión en el terminal.</p>
+<p class="na-hook">Fin del recorrido. Tienes el mapa de las cuatro capas, el argumento de por qué la terminal ejecuta, la lectura de una sesión real, la pieza central del harness y el dibujo de dónde vive todo. El siguiente paso es la primera tarea de verdad.</p>
+</div>
+</div>
+<nav class="lnav"><a href="#aula-5">← clase 5</a><a href="#trilha">completar la ruta →</a></nav>
+<footer>Clase 6 · INEMA.CLUB PRO</footer>
+<script id="cards-6" type="application/json">
+[
+  {"front":"Rafael abriu o agente em 'projetos' (a pasta-mãe) em vez de 'projetos/obra-centro' e pediu a tabela das propostas. O que sai errado e qual é o conserto?","back":"O agente lê propostas de todas as obras e mistura. Conserto: abrir na pasta da obra. O alcance é a pasta em que ele foi aberto."},
+  {"front":"Qual a diferença entre o que vai em '.claude' e o que vai em AGENTS.md?","back":"AGENTS.md na raiz: regras gerais, lidas por qualquer agente (Claude Code, Codex, Cursor). '.claude': só o que é específico do Claude Code. Assim não existem duas cópias das regras."},
+  {"front":"Chegou a ata de segunda na pasta raw da fábrica de Helena. Quais são as três operações do padrão wiki, e qual delas acontece agora?","back":"Ingerir, perguntar, revisar. Agora é ingerir: o agente atualiza as páginas afetadas (ex.: 'paradas de máquina') a partir da ata, citando a fonte."},
+  {"front":"Uma página de custo no formato OKF diz 'generated.by: agente/v1' e não tem 'verified.by'. Você a usa numa reunião de diretoria? Por quê?","back":"Não sem conferir. O cabeçalho mostra que nenhuma pessoa verificou. Confere, marca 'verified.by: human:<você>' e então usa. É para isso que o campo existe."},
+  {"front":"Camila quer que o consultório novo tenha regras diferentes da clínica. Onde essa diferença mora?","back":"Em pastas de projeto separadas, cada uma com a própria gaveta '.claude' (ou AGENTS.md). Regras acompanham a pasta, não o agente."}
+]
+</script>
+<!-- COMPLETUDE aula-6 | tipo=FUNDAMENTO | steps=5
+  [OK] promise            .promise no cold-open (1)
+  [OK] why                .why após a promessa (1)
+  [OK] tempo              data-tempo no view + render no cold-open (1)
+  [OK] exemplo-profissao  exemplo aplicado em 100% dos steps (5/5: Rafael, Camila, Helena+Denise, Helena, Rafael)
+  [OK] apoio-visual       figura legendada em 100% dos steps (5/5: diagramas nos steps 1,3,4,5; termdemo no step 2 com cópia .mobfig)
+  [OK] practice           .practice[data-mode="prompt"] (exatamente 1)
+  [OK] psafe              .psafe dentro da prática (1)
+  [OK] pgoal-tempo        .pgoal com tempo declarado (~12 min) (1)
+  [OK] recap-autor        .recap-autor no fecho (1)
+  [OK] next-action        .next-action no fecho (1)
+  [OK] cards              <script id="cards-6"> presente (5 cartões: diagnóstico, contraste, aplicação, decisão, aplicação)
+  [OK] anti-duplicacao    §11.3 — 3 testes passam (substring / forma / operação)
+  [OK] teste-se-FUND      tipo=FUNDAMENTO: presente (1 quiz data-fb)
+  Dosagem: quiz + cards + qbefore-after (step 1) + qanchor (step 5) = 4 obrigatórios, 0 opcional. Densidade: quadros nos steps 1 e 5; steps 2 (termdemo), 3 (quiz) e 4 só prosa. Steps 2, 3 e 5 são blocos-ferramenta com data-versao (pasta .claude, AGENTS.md/skills, OKF v0.2).
+-->
+</section>
+<script src="../assets/curso.js"></script>
+</body>
+</html>
